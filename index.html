@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARC Raiders — Quest Tree</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap');
+:root {
+  --bg:   #0c0e12; --bg2: #12151b; --bg3: #181c25;
+  --b:    #232838; --b2: #2e3548; --b3: #3d4760;
+  --t:    #d0d5e8; --t2: #7b839f; --t3: #3f4660;
+  --acc:  var(--track); --acc-dim: rgba(240,160,64,.15);
+  --hi:   #5b8fff; --hi-dim: rgba(91,143,255,.18);
+  --path: #3fcf8e; --path-dim: rgba(63,207,142,.18);
+  --track: #60a0e0; --track-dim: rgba(96,160,224,.15);
+  --done: #3f4660;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--t); font-family: 'Inter', sans-serif;
+  font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Topbar ─────────────────────────────────────────────────────────── */
+#topbar { background: var(--bg2); border-bottom: 1px solid var(--b); padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+.logo { display: flex; align-items: center; flex-shrink: 0; }
+.logo em { color: var(--acc); font-style: normal; }
+.sep { width: 1px; height: 20px; background: var(--b2); flex-shrink: 0; }
+#search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 340px; }
+#search-wrap svg { position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+  width: 14px; height: 14px; color: var(--t3); pointer-events: none; }
+#inp-search { width: 100%; padding: 7px 10px 7px 30px; border: 1px solid var(--b);
+  border-radius: 6px; background: var(--bg); color: var(--t); font-size: 13px;
+  font-family: 'Inter', sans-serif; outline: none; transition: border-color .15s; }
+#inp-search:focus { border-color: var(--b3); }
+#inp-search::placeholder { color: var(--t3); }
+.btn { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  padding: 6px 12px; border: 1px solid var(--b2); border-radius: 6px;
+  background: var(--bg3); color: var(--t2); cursor: pointer; white-space: nowrap;
+  transition: all .12s; }
+.btn:hover { background: var(--b); color: var(--t); border-color: var(--b3); }
+.btn.pri { background: var(--acc); border-color: var(--acc); color: #0c0e12; font-weight: 600; }
+.btn.pri:hover { background: #f5b060; }
+.btn:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ── Status ─────────────────────────────────────────────────────────── */
+#statusbar { background: var(--bg2); border-bottom: 1px solid var(--b); padding: 4px 14px;
+  font-size: 11px; color: var(--t3); display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+#sbar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--t3); flex-shrink: 0; }
+#sbar-dot.ok { background: var(--path); }
+#sbar-dot.err { background: #e8564a; }
+#sbar-right { margin-left: auto; }
+
+/* ── Legend ─────────────────────────────────────────────────────────── */
+
+
+/* ── Main layout ─────────────────────────────────────────────────────── */
+#main { flex: 1; display: flex; overflow: hidden; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+#sidebar { width: 260px; max-width: 32vw; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--b);
+  display: flex; flex-direction: column; overflow: hidden; }
+#sidebar-head { padding: 10px 12px 8px; border-bottom: 1px solid var(--b); }
+#sidebar-head h2 { font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--t3); }
+#sidebar-body { flex: 1; overflow-y: auto; padding: 8px 0; }
+#sidebar-body::-webkit-scrollbar { width: 4px; }
+#sidebar-body::-webkit-scrollbar-track { background: transparent; }
+#sidebar-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+
+.sq-item { padding: 7px 12px; cursor: pointer; font-size: 13px; color: var(--t2);
+  border-left: 2px solid transparent; display: flex; align-items: center; gap: 8px;
+  transition: background .12s ease, color .12s ease, transform .12s ease, filter .12s ease; }
+.sq-item:hover { background: var(--bg3); color: var(--t); transform: translateX(2px); }
+.sq-item.selected { background: var(--hi-dim); color: var(--hi); border-left-color: var(--hi); }
+.sq-item.in-path { background: var(--path-dim); color: var(--path); border-left-color: var(--path); }
+.sq-item.selected:hover, .sq-item.in-path:hover { filter: brightness(1.2); transform: translateX(2px); }
+@media (prefers-reduced-motion: reduce) {
+  .sq-item { transition: none; }
+  .sq-item:hover, .sq-item.selected:hover, .sq-item.in-path:hover { transform: none; }
+}
+.sq-num { font-size: 10px; color: var(--t3); min-width: 18px; text-align: right; }
+.sq-depth { font-size: 10px; color: var(--t3); margin-left: auto; }
+#no-results { padding: 20px 12px; font-size: 12px; color: var(--t3); text-align: center; }
+.sidebar-track-hdr { padding: 8px 12px 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--track); border-top: 1px solid var(--b); margin-top: 4px; }
+.sidebar-track-hdr:first-child { border-top: none; margin-top: 0; }
+
+/* ── Active panel ────────────────────────────────────────────────────── */
+#active-panel { width: 220px; max-width: 28vw; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--b);
+  display: flex; flex-direction: column; overflow: hidden; }
+#active-head { padding: 10px 12px 8px; border-bottom: 1px solid var(--b); display: flex; align-items: center; gap: 8px; }
+#active-head h2 { font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--t3); flex: 1; }
+#active-count { font-size: 11px; font-weight: 600; background: rgba(167,139,250,.18);
+  color: #c4b5fd; border-radius: 10px; padding: 1px 7px; }
+#active-body { flex: 1; overflow-y: auto; padding: 8px 0; }
+#active-body::-webkit-scrollbar { width: 4px; }
+#active-body::-webkit-scrollbar-track { background: transparent; }
+#active-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+.active-item { padding: 7px 12px; cursor: pointer; font-size: 13px; color: #c4b5fd;
+  border-left: 2px solid transparent; transition: all .1s; display: flex; align-items: center; gap: 8px; }
+.active-item:hover { background: rgba(167,139,250,.1); border-left-color: #a78bfa; color: #ddd6fe; }
+.active-item.focused { background: rgba(167,139,250,.18); border-left-color: #a78bfa; }
+
+#active-empty { padding: 20px 12px; font-size: 12px; color: var(--t3); text-align: center; line-height: 1.6; }
+
+/* ── Canvas ─────────────────────────────────────────────────────────── */
+#canvas-wrap { flex: 1; overflow: hidden; position: relative; cursor: grab;
+  background: var(--bg);
+  background-image: radial-gradient(circle, var(--b) 1px, transparent 1px);
+  background-size: 28px 28px; }
+#canvas-wrap.grabbing { cursor: grabbing; }
+#svg-wrap { position: absolute; top: 0; left: 0; transform-origin: 0 0;
+  transition: transform .35s cubic-bezier(.25,.46,.45,.94); }
+#svg-wrap.dragging { transition: none; }
+svg#tree { display: block; }
+
+/* Node styles */
+.qn { cursor: pointer; transition: transform .15s ease; transform-box: fill-box; transform-origin: center; }
+.qn rect { transition: filter .15s ease; }
+.qn:hover { transform: scale(1.035); }
+.qn:hover rect { filter: brightness(1.3) drop-shadow(0 0 6px rgba(96,160,224,.4)); }
+@media (prefers-reduced-motion: reduce) {
+  .qn, .qn rect { transition: none; }
+  .qn:hover { transform: none; }
+}
+
+
+
+/* ── Zoom controls ───────────────────────────────────────────────────── */
+#zoom-btns { position: absolute; bottom: 14px; right: 14px; display: flex;
+  flex-direction: column; gap: 4px; z-index: 10; }
+.zoom-btn { width: 30px; height: 30px; border: 1px solid var(--b2); border-radius: 5px;
+  background: var(--bg2); color: var(--t2); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center; transition: all .1s; }
+.zoom-btn:hover { background: var(--b); color: var(--t); }
+
+/* ── Active Quest Widget: docked flush at the bottom, hidden behind the
+   sidebar seam by default. It's a single flex row [panel, tab] that slides
+   as one rigid unit — no absolute-position-percentage math this time (that's
+   what broke last round): the container is shifted left by exactly the
+   panel's own width via a CSS custom property, so the tab (the row's other
+   flex child) is what's left sitting at the visible edge when "closed",
+   and the whole row slides to translateX(0) to reveal the panel when open.
+   Styled to match the quest hover-card: same two-layer clipped-corner
+   outline + dark gradient + four-color stripe. ────────────────────────── */
+#active-quest-widget { --aqw-w: min(300px, 82vw);
+  position: absolute; left: 0; bottom: 0; z-index: 20;
+  display: flex; flex-direction: row; align-items: flex-end;
+  transform: translateX(calc(-1 * var(--aqw-w)));
+  transition: transform .28s cubic-bezier(.25,.46,.45,.94); }
+#active-quest-widget.vis { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  #active-quest-widget { transition: none; }
+}
+/* Deliberately its own look, not a clone of the hover-card: plain rounded
+   card (not clipped/angular corners), standard app surface colors, and a
+   single-color accent bar instead of the tooltip's four-color stripe. */
+#aqw-panel { width: var(--aqw-w); max-height: min(60vh, 440px);
+  background: var(--bg2); border: 1px solid var(--b2); border-left: none;
+  border-radius: 0 8px 0 0; box-shadow: 0 16px 40px rgba(0,0,0,.4);
+  display: flex; flex-direction: column; overflow: hidden; }
+#aqw-panel::before { content: ''; display: block; height: 3px; flex-shrink: 0; background: var(--track); }
+/* Fixed size on its own terms — never stretches to match the panel's
+   (content-dependent) height. Keeps a cut corner (like the panel and the
+   rest of the app's angular accents) but otherwise styled like the other
+   canvas buttons (zoom/fit) rather than as its own distinct treatment.
+   Two clipped layers, same reason as the hover-card: a plain border doesn't
+   trace a clip-path's diagonal edge, so the outer layer supplies a 1px ring
+   in the outline color and the inner fill sits inset within it. */
+#aqw-toggle { flex-shrink: 0; width: 31px; height: 130px; padding: 1px 1px 1px 0;
+  border: none; background: var(--b2); cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+  display: flex; transition: background .1s; }
+#aqw-toggle-fill { flex: 1; display: flex; align-items: center; justify-content: center;
+  background: var(--bg2); color: var(--t2);
+  writing-mode: vertical-rl; text-orientation: mixed;
+  font-size: 11px; font-weight: 500; letter-spacing: .02em;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%); }
+#aqw-toggle:hover #aqw-toggle-fill { background: var(--b); color: var(--t); }
+#active-quest-widget.vis #aqw-toggle-fill { background: var(--track); color: #0c0e12; }
+#aqw-head { padding: 10px 14px 8px; border-bottom: 1px solid var(--b); flex-shrink: 0; }
+#aqw-head h2 { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
+  letter-spacing: .02em; color: var(--t); text-transform: uppercase; }
+#aqw-sub { font-size: 10.5px; color: var(--t3); }
+#aqw-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 14px; }
+#aqw-body::-webkit-scrollbar { width: 4px; }
+#aqw-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+.aqw-empty { font-size: 12px; color: var(--t3); text-align: center; padding: 30px 10px; line-height: 1.6; }
+.aqw-section { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--b); }
+.aqw-section:last-child { border-bottom: none; margin-bottom: 0; }
+.aqw-goal { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 6px; }
+.aqw-next-title { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
+  color: var(--hi); cursor: pointer; margin-bottom: 4px; }
+.aqw-next-title:hover { text-decoration: underline; }
+.aqw-next-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 500;
+  text-transform: none; color: var(--t3); margin-left: 6px; }
+.aqw-done-msg { font-size: 12px; color: var(--path); font-weight: 600; }
+.aqw-obj-list { list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.aqw-obj-item { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--t2);
+  cursor: pointer; }
+/* Custom checkbox: the native input is visually hidden but still focusable/
+   accessible; a sibling span is what actually renders the box + checkmark. */
+.aqw-obj-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.aqw-cb-box { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; position: relative;
+  border: 1.5px solid var(--b3); border-radius: 3px; background: var(--bg3);
+  transition: all .15s ease; }
+/* Optional steps get a round box instead of square — same square-vs-circle
+   distinction the wiki itself uses for required vs optional objectives. */
+.aqw-cb-box-optional { border-radius: 50%; }
+.aqw-obj-item input:checked ~ .aqw-cb-box { background: var(--track); border-color: var(--track); }
+.aqw-cb-box::after { content: ''; position: absolute; left: 5px; top: 1px; width: 4px; height: 8px;
+  border: solid #0c0e12; border-width: 0 2px 2px 0; transform: rotate(45deg) scale(0);
+  transition: transform .12s ease; }
+.aqw-obj-item input:checked ~ .aqw-cb-box::after { transform: rotate(45deg) scale(1); }
+.aqw-obj-item input:focus-visible ~ .aqw-cb-box { box-shadow: 0 0 0 2px var(--track-dim); }
+.aqw-obj-item .aqw-obj-checked { color: var(--t3); text-decoration: line-through; }
+
+/* Same two-layer trick as the widget toggle: outer ring supplies the
+   outline the clip-path corner needs, inner fill holds the real content. */
+.aqw-done-btn { margin-top: 12px; width: 100%; padding: 1px; border: none;
+  background: rgba(63,207,142,.4);
+  clip-path: polygon(9px 0, 100% 0, 100% 100%, 0 100%, 0 9px);
+  cursor: pointer; }
+.aqw-done-btn-fill { display: block; padding: 6px 9px; font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--path);
+  background: var(--path-dim);
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+  transition: background .15s ease; }
+.aqw-done-btn:hover .aqw-done-btn-fill { background: rgba(63,207,142,.28); }
+
+/* ── Quests-by-Map widget: same pull-tab mechanic as Active Quest, mirrored
+   to the top of the canvas, with its own purple accent (matching the
+   "available now" node color elsewhere in the tree) so the two widgets
+   read as related but distinct. ─────────────────────────────────────── */
+#map-quest-widget { --mqw-w: min(300px, 82vw);
+  position: absolute; left: 0; top: 0; z-index: 20;
+  display: flex; flex-direction: row; align-items: flex-start;
+  transform: translateX(calc(-1 * var(--mqw-w)));
+  transition: transform .28s cubic-bezier(.25,.46,.45,.94); }
+#map-quest-widget.vis { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  #map-quest-widget { transition: none; }
+}
+#mqw-panel { width: var(--mqw-w); max-height: min(60vh, 440px);
+  background: var(--bg2); border: 1px solid var(--b2); border-left: none;
+  border-radius: 0 0 8px 0; box-shadow: 0 16px 40px rgba(0,0,0,.4);
+  display: flex; flex-direction: column; overflow: hidden; }
+#mqw-panel::before { content: ''; display: block; height: 3px; flex-shrink: 0; background: #a78bfa; }
+#mqw-toggle { flex-shrink: 0; width: 31px; height: 130px; padding: 0 1px 1px 0;
+  border: none; background: var(--b2); cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+  display: flex; transition: background .1s; }
+#mqw-toggle-fill { flex: 1; display: flex; align-items: center; justify-content: center;
+  background: var(--bg2); color: var(--t2);
+  writing-mode: vertical-rl; text-orientation: mixed;
+  font-size: 11px; font-weight: 500; letter-spacing: .02em;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%); }
+#mqw-toggle:hover #mqw-toggle-fill { background: var(--b); color: var(--t); }
+#map-quest-widget.vis #mqw-toggle-fill { background: #a78bfa; color: #1a1030; }
+#mqw-head { padding: 10px 14px 8px; border-bottom: 1px solid var(--b); flex-shrink: 0; }
+#mqw-head h2 { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
+  letter-spacing: .02em; color: var(--t); text-transform: uppercase; }
+#mqw-sub { font-size: 10.5px; color: var(--t3); }
+#mqw-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 14px; }
+#mqw-body::-webkit-scrollbar { width: 4px; }
+#mqw-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+/* Step 1: pick a map */
+.mqw-map-btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.mqw-map-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  min-width: 0; width: 100%; background: var(--bg3); border: 1px solid var(--b2); border-radius: 6px;
+  padding: 9px 10px; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif;
+  transition: all .12s; }
+.mqw-map-btn:hover { background: var(--b); border-color: #a78bfa; }
+.mqw-map-btn-name { font-size: 12px; font-weight: 600; color: var(--t);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mqw-map-btn-count { font-size: 10.5px; color: #a78bfa; }
+/* "Any Map" gets its own color (cyan) distinct from the widget's purple, both
+   for its own button and for the "+ N any" count/tag it contributes elsewhere. */
+.mqw-map-btn-any { border-color: rgba(34,211,238,.4); }
+.mqw-map-btn-any:hover { border-color: #22d3ee; }
+.mqw-map-btn-any .mqw-map-btn-name { color: #22d3ee; }
+.mqw-any-color { color: #22d3ee; }
+/* Nothing map-specific here right now — dim it so the maps actually worth
+   loading into stand out. Still fully clickable (any-map quests may apply). */
+.mqw-map-btn-empty { opacity: .45; }
+.mqw-map-btn-empty:hover { opacity: .7; }
+/* Collapsible "Any Map" dropdown — keeps map-specific and any-map quests
+   visually separate instead of blending into one list. */
+.mqw-any-section { margin-top: 6px; border-top: 1px dashed rgba(34,211,238,.3); padding-top: 10px; }
+.mqw-any-toggle { display: flex; align-items: center; gap: 6px; width: 100%; background: none;
+  border: none; color: #22d3ee; font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 4px 0; text-align: left; }
+.mqw-any-toggle:hover { color: #67e8f9; }
+.mqw-any-chevron { display: inline-block; font-size: 10px; transition: transform .15s ease; }
+.mqw-any-toggle.open .mqw-any-chevron { transform: rotate(90deg); }
+.mqw-any-content { display: none; margin-top: 10px; padding-left: 10px;
+  border-left: 2px solid rgba(34,211,238,.25); }
+.mqw-any-content.open { display: block; }
+
+/* Step 2: that map's available quests, steps shown directly (not just names) */
+.mqw-back-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.mqw-back-btn { background: none; border: 1px solid var(--b2); color: var(--t2); font-size: 11px;
+  cursor: pointer; padding: 3px 9px; border-radius: 5px; flex-shrink: 0; }
+.mqw-back-btn:hover { background: var(--bg3); color: var(--t); }
+.mqw-current-map { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700;
+  letter-spacing: .02em; text-transform: uppercase; color: #a78bfa; }
+.mqw-quest-block { padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--b); }
+.mqw-quest-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.mqw-quest-block-noborder { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+/* ── Context menu ────────────────────────────────────────────────────── */
+#ctx-menu { position: fixed; background: var(--bg2); border: 1px solid var(--b2);
+  border-radius: 6px; padding: 4px 0; z-index: 200; display: none; min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+#ctx-menu.vis { display: block; }
+.ctx-item { padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--t2);
+  display: flex; align-items: center; gap: 8px; transition: background .1s; }
+.ctx-item:hover { background: var(--bg3); color: var(--t); }
+.ctx-item .ctx-icon { font-size: 14px; width: 16px; text-align: center; }
+
+
+/* ── Expedition (danger) button ─────────────────────────────────────── */
+.btn.danger { border-color: rgba(232,86,74,.4); color: #e8564a; }
+.btn.danger:hover { background: rgba(232,86,74,.15); border-color: #e8564a; color: #ff8478; }
+
+/* ── Rewards modal ───────────────────────────────────────────────────── */
+#rewards-overlay { position: fixed; inset: 0; background: rgba(6,7,10,.6); z-index: 300;
+  display: none; align-items: flex-start; justify-content: center; padding: 6vh 20px; }
+#rewards-overlay.vis { display: flex; }
+#rewards-modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 10px;
+  width: 100%; max-width: 620px; max-height: 86vh; display: flex; flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5); overflow: hidden; }
+#rewards-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--b); flex-shrink: 0; }
+#rewards-head-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+#rewards-head h2 { font-size: 14px; font-weight: 600; color: var(--t); flex: 1; }
+#rewards-close { background: none; border: none; color: var(--t2); font-size: 18px; cursor: pointer;
+  line-height: 1; padding: 2px 6px; border-radius: 4px; }
+#rewards-close:hover { background: var(--bg3); color: var(--t); }
+#inp-rewards-search { width: 100%; padding: 7px 10px; border: 1px solid var(--b); border-radius: 6px;
+  background: var(--bg); color: var(--t); font-size: 13px; font-family: 'Inter', sans-serif; outline: none; }
+#inp-rewards-search:focus { border-color: var(--b3); }
+#rewards-sub, #rewards-subcat-sub { font-size: 11px; color: var(--t3); }
+#rewards-body { flex: 1; overflow-y: auto; padding: 6px 0; }
+#rewards-body::-webkit-scrollbar { width: 4px; }
+#rewards-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+
+/* ── Rewards category grid (landing screen) ────────────────────────── */
+#rewards-cat-grid { flex: 1; overflow-y: auto; padding: 14px 16px; display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.rewards-cat-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  background: var(--bg3); border: 1px solid var(--b2); border-radius: 8px; padding: 12px 14px;
+  cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; transition: all .12s; }
+.rewards-cat-btn:hover { background: var(--b); border-color: var(--b3); }
+.rewards-cat-btn .rcb-icon-img { width: 28px; height: 28px; object-fit: contain; border-radius: 5px;
+  background: var(--bg); }
+.rewards-cat-btn .rcb-icon-fallback { width: 28px; height: 28px; border-radius: 5px; background: var(--bg);
+  color: var(--t3); font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.rewards-cat-btn .rcb-name { font-size: 13px; font-weight: 600; color: var(--t); }
+.rewards-cat-btn .rcb-count { font-size: 11px; color: var(--t3); }
+.rewards-cat-btn .rcb-ratio { font-size: 11px; font-weight: 600; color: var(--t3); }
+.rewards-cat-btn .rcb-ratio.rcb-ratio-done { color: var(--path); }
+
+/* ── Rewards sub-modal (one category) ───────────────────────────────── */
+#rewards-subcat-overlay { position: fixed; inset: 0; background: rgba(6,7,10,.45); z-index: 310;
+  display: none; align-items: flex-start; justify-content: center; padding: 6vh 20px; }
+#rewards-subcat-overlay.vis { display: flex; }
+#rewards-subcat-modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 10px;
+  width: 100%; max-width: 620px; max-height: 86vh; display: flex; flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5); overflow: hidden; }
+#rewards-subcat-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--b); flex-shrink: 0; }
+#rewards-subcat-head-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+#rewards-subcat-head h2 { font-size: 14px; font-weight: 600; color: var(--t); flex: 1; }
+#rewards-back-btn { background: none; border: 1px solid var(--b2); color: var(--t2); font-size: 11px;
+  cursor: pointer; padding: 4px 9px; border-radius: 5px; white-space: nowrap; }
+#rewards-back-btn:hover { background: var(--bg3); color: var(--t); }
+#rewards-subcat-close { background: none; border: none; color: var(--t2); font-size: 18px; cursor: pointer;
+  line-height: 1; padding: 2px 6px; border-radius: 4px; }
+#rewards-subcat-close:hover { background: var(--bg3); color: var(--t); }
+
+/* ── Quest details modal ─────────────────────────────────────────────── */
+#quest-detail-overlay { position: fixed; inset: 0; background: rgba(6,7,10,.6); z-index: 300;
+  display: none; align-items: flex-start; justify-content: center; padding: 6vh 20px; }
+#quest-detail-overlay.vis { display: flex; }
+#quest-detail-modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 10px;
+  width: 100%; max-width: 560px; max-height: 86vh; display: flex; flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5); overflow: hidden; }
+#qd-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--b); flex-shrink: 0; }
+#qd-head-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+#qd-title-row { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+#qd-head h2 { font-size: 15px; font-weight: 600; color: var(--t); flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#qd-close { background: none; border: none; color: var(--t2); font-size: 18px; cursor: pointer;
+  line-height: 1; padding: 2px 6px; border-radius: 4px; }
+#qd-close:hover { background: var(--bg3); color: var(--t); }
+#qd-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+/* Trader portrait sits next to the quest name now, freeing the meta row
+   for map/one-round labels instead of competing with a trader pill there. */
+.trader-badge { display: inline-flex; align-items: center; flex-shrink: 0; }
+/* Lets a single "location" slot expand into one pill per map — the wrapper
+   itself takes no box, so its child pills flow into the same flex row/wrap
+   as the trader and one-round pills instead of being nested inside a block. */
+.loc-pill-wrap { display: contents; }
+.qd-pill, .qhc-pill { display: inline-flex; align-items: center; line-height: 1; }
+.qd-pill { font-size: 11px; color: var(--t2); background: var(--bg3); border: 1px solid var(--b2);
+  border-radius: 10px; padding: 4px 10px; }
+.trader-icon { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; display: block;
+  box-shadow: 0 0 0 1.5px var(--b3); }
+.qd-pill-oneround, .qhc-pill-oneround { color: #f0a860 !important; background: rgba(240,160,64,.14) !important;
+  border-color: rgba(240,160,64,.4) !important; }
+.qhc-pill-frame-oneround { background: rgba(240,160,64,.5) !important; }
+#qd-body { flex: 1; overflow-y: auto; padding: 4px 0 12px; }
+#qd-body::-webkit-scrollbar { width: 4px; }
+#qd-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+.qd-section { padding: 10px 16px; }
+.qd-section h3 { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 8px; }
+.qd-optional-tag { font-size: 10px; font-style: italic; color: var(--t3); }
+.qd-item-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.qd-item-list .qd-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--t2); }
+.qd-item-icon { width: 22px; height: 22px; object-fit: contain; border-radius: 4px; background: var(--bg3); }
+.qd-item-icon-fallback { width: 22px; height: 22px; border-radius: 4px; background: var(--bg3);
+  color: var(--t3); font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.qd-item-qty { color: var(--acc); font-weight: 600; min-width: 26px; }
+.qd-empty { font-size: 12px; color: var(--t3); font-style: italic; }
+
+/* ── Hover card: HUD-panel styling — angular clipped corners + the same
+   four-color stripe used in the app's own logo, as a signature callback.
+   Two nested clipped layers (frame + panel) because a plain `border` or
+   inset box-shadow only traces the box's original rectangle — it doesn't
+   follow the diagonal edges clip-path introduces, so the cut corners come
+   out unbordered. Padding the frame by 1.5px and giving *it* the light
+   color, then clipping the dark panel inside to the same silhouette,
+   produces a uniform outline that follows the angled corners too. ── */
+#quest-hover-card { position: fixed; z-index: 500; width: min(300px, 92vw); max-height: 70vh;
+  display: none; pointer-events: none; padding: 1.5px;
+  background: rgba(210,220,240,.9);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  box-shadow: 0 22px 50px rgba(0,0,0,.65), 0 6px 18px rgba(0,0,0,.5); }
+#quest-hover-card.vis { display: flex; flex-direction: column; animation: qhc-in .15s ease-out; }
+@keyframes qhc-in { from { opacity: 0; transform: translateY(3px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  #quest-hover-card.vis { animation: none; }
+}
+#qhc-panel { flex: 1; min-height: 0; overflow-y: auto;
+  background: linear-gradient(180deg, #10131a 0%, #0a0c10 100%);
+  clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px); }
+#qhc-panel::-webkit-scrollbar { width: 0; }
+#qhc-panel::before { content: ''; display: block; height: 3px;
+  background: linear-gradient(90deg, #e63030 0 25%, #f5cc00 25% 50%, #3db84c 50% 75%, #3a6eea 75% 100%); }
+#qhc-inner { padding: 12px 14px 14px; }
+#qhc-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; min-width: 0; }
+#qhc-title { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700;
+  letter-spacing: .02em; text-transform: uppercase; color: var(--t); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#qhc-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+/* Same two-layer trick again: the frame is the outline, the pill inside it
+   is the actual fill/content, both clipped to the same corner cut. */
+.qhc-pill-frame { display: inline-flex; padding: 1px;
+  background: rgba(96,160,224,.4);
+  clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%, 0 6px); }
+.qhc-pill { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: .03em;
+  text-transform: uppercase; color: var(--track); background: var(--track-dim); padding: 3px 8px;
+  clip-path: polygon(5px 0, 100% 0, 100% 100%, 0 100%, 0 5px); }
+.qhc-section { margin-top: 11px; }
+.qhc-section h4 { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 6px; border-bottom: 1px solid var(--b); padding-bottom: 4px; }
+.reward-group { padding: 8px 16px; border-bottom: 1px solid var(--b); }
+.reward-group-name { font-size: 13px; font-weight: 600; color: var(--t); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.reward-group-name .rg-icon-img { width: 22px; height: 22px; flex-shrink: 0; object-fit: contain;
+  border-radius: 4px; background: var(--bg3); }
+.reward-group-name .rg-icon-fallback { width: 22px; height: 22px; flex-shrink: 0; border-radius: 4px;
+  background: var(--bg3); color: var(--t3); font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.reward-group-name .rg-title { flex: 1; min-width: 0; }
+.reward-group-name .rg-ratio { font-size: 11px; font-weight: 600; color: var(--t3); flex-shrink: 0; }
+.reward-group-name .rg-ratio.rg-ratio-done { color: var(--path); }
+.reward-src-list { list-style: none; margin-left: 4px; padding-left: 14px; border-left: 1px solid var(--b); }
+.reward-src { display: flex; align-items: center; gap: 8px; padding: 4px 0 4px 4px; font-size: 12px; }
+.reward-src .rs-qty { color: var(--acc); font-weight: 600; min-width: 26px; }
+.reward-src .rs-title { flex: 1; color: var(--t2); cursor: pointer; }
+.reward-src .rs-title:hover { color: var(--t); text-decoration: underline; }
+.reward-src .rs-title.rs-done { color: var(--t3); text-decoration: line-through; }
+.reward-src .rs-kind { font-size: 10px; color: var(--t3); border: 1px solid var(--b2); border-radius: 3px;
+  padding: 1px 5px; flex-shrink: 0; white-space: nowrap; }
+.reward-src .rs-track { font-size: 11px; border: 1px solid var(--b2); border-radius: 4px;
+  padding: 2px 8px; cursor: pointer; color: var(--track); background: none; white-space: nowrap; }
+.reward-src .rs-track:hover { background: var(--track-dim); border-color: var(--track); }
+.reward-src .rs-track.active { background: var(--track); border-color: var(--track); color: #0c0e12; }
+.reward-src .rs-track:disabled { cursor: default; opacity: .6; }
+#rewards-empty { padding: 30px 16px; text-align: center; font-size: 12px; color: var(--t3); }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo">
+    <svg height="28" viewBox="0 0 148 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <mask id="raidmask">
+          <rect width="148" height="28" fill="black"/>
+          <text x="52" y="22" font-family="'Rajdhani',sans-serif" font-size="24" font-weight="700"
+            letter-spacing="1" fill="white">RAIDERS</text>
+        </mask>
+        <linearGradient id="stripe4" x1="52" y1="28" x2="148" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#e63030"/>
+          <stop offset="25%"  stop-color="#e63030"/>
+          <stop offset="25%"  stop-color="#f5cc00"/>
+          <stop offset="50%"  stop-color="#f5cc00"/>
+          <stop offset="50%"  stop-color="#3db84c"/>
+          <stop offset="75%"  stop-color="#3db84c"/>
+          <stop offset="75%"  stop-color="#3a6eea"/>
+          <stop offset="100%" stop-color="#3a6eea"/>
+        </linearGradient>
+      </defs>
+      <!-- ARC in cream, plain -->
+      <text x="0" y="22" font-family="'Rajdhani',sans-serif" font-size="24" font-weight="700"
+        letter-spacing="1" fill="#eae0cd">ARC </text>
+      <!-- RAIDERS base in cream -->
+      <text x="52" y="22" font-family="'Rajdhani',sans-serif" font-size="24" font-weight="700"
+        letter-spacing="1" fill="#eae0cd">RAIDERS</text>
+      <!-- 4-color stripe overlay on RAIDERS only -->
+      <rect x="52" width="96" height="28" fill="url(#stripe4)" mask="url(#raidmask)" opacity="0.85"/>
+    </svg>
+  </div>
+  <div class="sep"></div>
+  <div id="search-wrap">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="6.5" cy="6.5" r="4.5"/><path d="m10.5 10.5 3 3"/>
+    </svg>
+    <input id="inp-search" type="text" placeholder="Find quest or reward… (Ctrl+F)">
+  </div>
+  <button class="btn" onclick="fitView()">⤢ Fit</button>
+  <button class="btn" onclick="openRewards()">🏆 Rewards</button>
+  <div class="sep"></div>
+  <button class="btn danger" onclick="startExpedition()" title="Reset all progress and start over">⟲ Expedition</button>
+</div>
+
+<div id="statusbar">
+  <div id="sbar-dot"></div>
+  <span id="sbar-msg">Loading quests…</span>
+  <span id="sbar-right"></span>
+</div>
+
+<div id="main">
+  <!-- Sidebar: search results / path list -->
+  <div id="sidebar">
+    <div id="sidebar-head"><h2 id="sidebar-title">Click a quest to trace path</h2></div>
+    <div id="sidebar-body">
+      <div id="no-results" style="display:none">No quests match</div>
+    </div>
+  </div>
+
+  <!-- Tree canvas -->
+  <div id="canvas-wrap">
+    <div id="svg-wrap"><svg id="tree"></svg></div>
+    <div id="zoom-btns">
+      <button class="zoom-btn" onclick="zoom(1.25)" title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="zoom(0.8)"  title="Zoom out">−</button>
+      <button class="zoom-btn" onclick="fitView()"  title="Fit" style="font-size:12px">⤢</button>
+    </div>
+
+    <!-- Docked flush at the bottom, hidden behind the sidebar seam by default
+         (the row is shifted left by the panel's own width, leaving just the
+         tab visible) — pulled out to the right on toggle. -->
+    <div id="active-quest-widget">
+      <div id="aqw-panel">
+        <div id="aqw-head">
+          <h2>Active Quest</h2>
+          <span id="aqw-sub">What to do next, for each quest you're tracking</span>
+        </div>
+        <div id="aqw-body"></div>
+      </div>
+      <button id="aqw-toggle" onclick="toggleActiveQuestWidget()"><span id="aqw-toggle-fill">Active Quest</span></button>
+    </div>
+
+    <!-- Mirrors the Active Quest widget but docked at the top: hidden behind
+         the sidebar seam by default, pulled out to the right on toggle. -->
+    <div id="map-quest-widget">
+      <div id="mqw-panel">
+        <div id="mqw-head">
+          <h2>Quests by Map</h2>
+          <span id="mqw-sub">Available now, grouped by where they're playable</span>
+        </div>
+        <div id="mqw-body"></div>
+      </div>
+      <button id="mqw-toggle" onclick="toggleMapQuestWidget()"><span id="mqw-toggle-fill">Quests by Map</span></button>
+    </div>
+  </div>
+
+  <!-- Active quests panel -->
+  <div id="active-panel">
+    <div id="active-head">
+      <h2>Available now</h2>
+      <span id="active-count">0</span>
+    </div>
+    <div id="active-body">
+      <div id="active-empty">Load quests to see what's available</div>
+    </div>
+  </div>
+</div>
+
+<!-- Right-click context menu -->
+<div id="ctx-menu">
+  <div class="ctx-item" id="ctx-toggle" onclick="ctxToggle()">
+    <span class="ctx-icon">✓</span><span id="ctx-label">Mark as done</span>
+  </div>
+  <div class="ctx-item" id="ctx-track" onclick="ctxTrack()">
+    <span class="ctx-icon" style="display:inline-flex;align-items:center"><svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 16 16"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg></span><span id="ctx-track-label">Track quest</span>
+  </div>
+  <div class="ctx-item" id="ctx-ready" onclick="ctxMarkReady()">
+    <span class="ctx-icon">⇒</span><span>Mark quest as available (automatically clears previous quests)</span>
+  </div>
+  <div class="ctx-item" onclick="ctxSelect()">
+    <span class="ctx-icon">→</span><span>Show path</span>
+  </div>
+  <div class="ctx-item" onclick="ctxDetails()">
+    <span class="ctx-icon">ℹ</span><span>Quest details</span>
+  </div>
+</div>
+
+<!-- Rewards catalog modal: category picker -->
+<div id="rewards-overlay" onclick="if(event.target===this) closeRewards()">
+  <div id="rewards-modal">
+    <div id="rewards-head">
+      <div id="rewards-head-row">
+        <h2>Rewards catalog</h2>
+        <button id="rewards-close" onclick="closeRewards()">✕</button>
+      </div>
+      <div id="rewards-sub"></div>
+    </div>
+    <div id="rewards-cat-grid"></div>
+  </div>
+</div>
+
+<!-- Rewards sub-modal: one category, searchable -->
+<div id="rewards-subcat-overlay" onclick="if(event.target===this) closeRewardsCategory(true)">
+  <div id="rewards-subcat-modal">
+    <div id="rewards-subcat-head">
+      <div id="rewards-subcat-head-row">
+        <button id="rewards-back-btn" onclick="closeRewardsCategory(false)">← Categories</button>
+        <h2 id="rewards-subcat-title"></h2>
+        <button id="rewards-subcat-close" onclick="closeRewardsCategory(true)">✕</button>
+      </div>
+      <input id="inp-rewards-search" type="text" placeholder="Filter this category…">
+      <div id="rewards-subcat-sub" style="margin-top:6px"></div>
+    </div>
+    <div id="rewards-body"></div>
+  </div>
+</div>
+
+<!-- Quest details modal -->
+<div id="quest-detail-overlay" onclick="if(event.target===this) closeQuestDetail()">
+  <div id="quest-detail-modal">
+    <div id="qd-head">
+      <div id="qd-head-row">
+        <div id="qd-title-row">
+          <span id="qd-trader" class="trader-badge"></span>
+          <h2 id="qd-title"></h2>
+        </div>
+        <button id="qd-close" onclick="closeQuestDetail()">✕</button>
+      </div>
+      <div id="qd-meta">
+        <span id="qd-location" class="loc-pill-wrap"></span>
+        <span id="qd-oneround" class="qd-pill qd-pill-oneround" style="display:none">⏱ In one round</span>
+      </div>
+    </div>
+    <div id="qd-body">
+      <div class="qd-section">
+        <h3>Objectives</h3>
+        <ul id="qd-objectives" class="aqw-obj-list"></ul>
+      </div>
+      <div class="qd-section" id="qd-granted-section">
+        <h3>Granted on acceptance</h3>
+        <ul id="qd-granted" class="qd-item-list"></ul>
+      </div>
+      <div class="qd-section">
+        <h3>Rewards on completion</h3>
+        <ul id="qd-rewards" class="qd-item-list"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hover card: same quest info, surfaced shortly after the pointer rests on a node.
+     Two nested layers: the outer frame supplies the white outline + drop shadow,
+     the inner panel supplies the dark background — both clipped to the same
+     angular silhouette so the outline traces the cut corners too. -->
+<div id="quest-hover-card">
+  <div id="qhc-panel">
+    <div id="qhc-inner">
+      <div id="qhc-title-row">
+        <span id="qhc-trader" class="trader-badge"></span>
+        <h3 id="qhc-title"></h3>
+      </div>
+      <div id="qhc-meta">
+        <span id="qhc-location" class="loc-pill-wrap"></span>
+        <span id="qhc-oneround" class="qhc-pill-frame qhc-pill-frame-oneround" style="display:none"><span class="qhc-pill qhc-pill-oneround">⏱ In one round</span></span>
+      </div>
+      <div class="qhc-section">
+        <h4>Objectives</h4>
+        <ul id="qhc-objectives" class="aqw-obj-list"></ul>
+      </div>
+      <div class="qhc-section" id="qhc-granted-section">
+        <h4>Granted on accept</h4>
+        <ul id="qhc-granted" class="qd-item-list"></ul>
+      </div>
+      <div class="qhc-section">
+        <h4>Rewards</h4>
+        <ul id="qhc-rewards" class="qd-item-list"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+let Q = {};               // { slug: { title, trader, previous[], next[] } }
+let ItemIcons = {};       // { itemSlug: iconUrl }
+let TraderIcons = {};     // { traderName: iconUrl }
+let selectedSlug = null;  // currently clicked quest
+let pathSlugs = new Set(); // full ancestor path to selected
+let traderFilter = ''; // unused, kept for compat
+let viewMode = 'tree';    // 'tree' | 'list'
+let scale = 1, tx = 0, ty = 0;
+let done = new Set();     // slugs the player has completed
+let tracking = new Set(); // slugs the player is actively working on
+let objectiveProgress = {}; // { slug: Set<objective index> } — personal checklist within a quest
+
+function loadDone() {
+  try { done = new Set(JSON.parse(localStorage.getItem('arc-done') || '[]')); } catch { done = new Set(); }
+  try { tracking = new Set(JSON.parse(localStorage.getItem('arc-tracking') || '[]')); } catch { tracking = new Set(); }
+  try {
+    const raw = JSON.parse(localStorage.getItem('arc-objectives') || '{}');
+    objectiveProgress = {};
+    Object.entries(raw).forEach(([slug, arr]) => { objectiveProgress[slug] = new Set(arr); });
+  } catch { objectiveProgress = {}; }
+}
+
+// quests.json previously had case-variant duplicate slugs for a few quests
+// (e.g. Eyes_In_The_Sky vs Eyes_in_the_Sky — same wiki page, different link
+// casing) that got merged into one canonical slug. Anyone who had tracked or
+// completed one of those under the old casing has a stale slug sitting in
+// localStorage that no longer matches any key in Q, so it silently never
+// renders as highlighted again until re-toggled. Remap it once Q is loaded.
+const SLUG_MIGRATIONS = {
+  'Eyes_In_The_Sky': 'Eyes_in_the_Sky',
+  'A_Symbol_Of_Unification': 'A_Symbol_of_Unification',
+  'Reduced_To_Rubble': 'Reduced_to_Rubble',
+  'Out_Of_The_Shadows': 'Out_of_the_Shadows',
+};
+function migrateStaleSlugs() {
+  let changed = false;
+  [done, tracking].forEach(set => {
+    Object.entries(SLUG_MIGRATIONS).forEach(([oldSlug, newSlug]) => {
+      if (set.has(oldSlug)) { set.delete(oldSlug); set.add(newSlug); changed = true; }
+    });
+  });
+  if (changed) saveDone();
+}
+function saveDone() {
+  localStorage.setItem('arc-done', JSON.stringify([...done]));
+  localStorage.setItem('arc-tracking', JSON.stringify([...tracking]));
+}
+function saveObjectiveProgress() {
+  const raw = {};
+  Object.entries(objectiveProgress).forEach(([slug, set]) => { raw[slug] = [...set]; });
+  localStorage.setItem('arc-objectives', JSON.stringify(raw));
+}
+function toggleDone(slug) {
+  const markingDone = !done.has(slug);
+  if (done.has(slug)) done.delete(slug); else { done.add(slug); tracking.delete(slug); }
+  if (markingDone) markAllRequiredObjectivesDone(slug);
+  saveDone();
+  // Re-render without disturbing the selection
+  if (viewMode === 'tree') renderTree();
+  else renderList();
+  renderActive();
+  // Refresh sidebar path display in-place (re-render items without re-selecting)
+  if (selectedSlug) refreshSidebarDoneState();
+  else renderAutoTrackSidebar();
+  refreshActiveQuestWidgetIfOpen();
+  refreshMapQuestWidgetIfOpen();
+}
+function toggleTracking(slug) {
+  if (tracking.has(slug)) tracking.delete(slug); else { tracking.add(slug); done.delete(slug); }
+  saveDone();
+  if (viewMode === 'tree') renderTree();
+  else renderList();
+  renderActive();
+  if (selectedSlug) refreshSidebarDoneState();
+  else renderAutoTrackSidebar();
+  refreshActiveQuestWidgetIfOpen();
+  refreshMapQuestWidgetIfOpen();
+}
+// Mark a quest as active-ready: auto-mark all its ancestors as done, track this one
+function markReady(slug) {
+  if (!Q[slug]) return;
+  // Recursively mark all ancestors done
+  const ancestors = getAncestors(slug);
+  ancestors.forEach(s => { done.add(s); tracking.delete(s); markAllRequiredObjectivesDone(s); });
+  // Leave the quest itself untouched — just unlock it
+  saveDone();
+  if (viewMode === 'tree') renderTree();
+  else renderList();
+  renderActive();
+  if (selectedSlug) refreshSidebarDoneState();
+  else renderAutoTrackSidebar();
+  refreshActiveQuestWidgetIfOpen();
+  refreshMapQuestWidgetIfOpen();
+}
+// Refresh just the done/tracking badges in the sidebar without rebuilding it
+function refreshSidebarDoneState() {
+  document.querySelectorAll('#sidebar-body .sq-item[data-slug]').forEach(el => {
+    const s = el.dataset.slug;
+    const isCurrent = s === selectedSlug;
+    const isDone = done.has(s);
+    const isTracking = tracking.has(s);
+    el.style.opacity = (!isCurrent && isDone) ? '0.5' : '';
+    const badge = el.querySelector('.sq-badge');
+    if (badge) badge.textContent = isCurrent ? 'TARGET' : isDone ? '✓' : isTracking ? '▶' : '';
+    const title = el.querySelector('.sq-title');
+    if (title) {
+      title.style.textDecoration = (isDone && !isCurrent) ? 'line-through' : '';
+      title.style.color = (isDone && !isCurrent) ? 'var(--t3)' : '';
+    }
+  });
+}
+loadDone();
+
+// Active = all prereqs done (or no prereqs), quest itself not done
+function getActive() {
+  return Object.keys(Q).filter(slug => {
+    if (Q[slug].error) return false;
+    if (done.has(slug)) return false;
+    return (Q[slug].previous || []).every(p => done.has(p));
+  });
+}
+
+// Search matches a quest's own title OR the name of anything it rewards
+function questMatchesSearch(slug, search) {
+  if (!search) return true;
+  const q = Q[slug];
+  if (!q) return false;
+  if (q.title.toLowerCase().includes(search)) return true;
+  return (q.rewards || []).some(r => r.name.toLowerCase().includes(search));
+}
+
+const NODE_COLOR = '#7b8cc8'; // single neutral color for all nodes
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE LOADING — auto-fetches quests.json from the server root
+═══════════════════════════════════════════════════════════════ */
+async function autoLoad() {
+  // Icons are cosmetic — fetch them alongside quests.json but never let a
+  // missing/failed icon file block the tracker from loading.
+  try {
+    const res = await fetch('item-icons.json');
+    if (res.ok) ItemIcons = await res.json();
+  } catch { /* ignore */ }
+  try {
+    const res = await fetch('trader-icons.json');
+    if (res.ok) TraderIcons = await res.json();
+  } catch { /* ignore */ }
+
+  try {
+    const res = await fetch('quests.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    Q = await res.json();
+    migrateStaleSlugs();
+    backfillDoneObjectives();
+    const n = Object.keys(Q).length;
+    setStatus('ok', `${n} quests loaded`, `${n} quests · ${done.size} done`);
+    clearPath();
+    renderAll();
+    const savedView = loadView();
+    if (savedView) { scale = savedView.scale; tx = savedView.tx; ty = savedView.ty; applyT(); }
+    else fitView();
+    restoreActiveQuestWidget();
+    restoreMapQuestWidget();
+  } catch(err) {
+    setStatus('err', `Could not load quests.json — ${err.message}`, '');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PATH COMPUTATION
+   getAncestors(slug): all quests you must do BEFORE slug
+   Returns a flat Set of slugs in topological order
+═══════════════════════════════════════════════════════════════ */
+function getAncestors(slug) {
+  const ancestors = new Set();
+  const queue = [...(Q[slug]?.previous || [])];
+  const visited = new Set();
+  while (queue.length) {
+    const s = queue.shift();
+    if (visited.has(s) || !Q[s]) continue;
+    visited.add(s);
+    ancestors.add(s);
+    queue.push(...(Q[s].previous || []));
+  }
+  return ancestors;
+}
+
+function getPathToQuest(slug) {
+  // BFS backwards from slug to find ordered path
+  if (!Q[slug]) return [];
+  const ancestors = getAncestors(slug);
+  // Topological sort of ancestors + slug
+  const nodes = [...ancestors, slug];
+  return topoSort(nodes);
+}
+
+function topoSort(nodes) {
+  const set = new Set(nodes);
+  const result = [], visited = new Set();
+  function visit(n) {
+    if (visited.has(n)) return;
+    visited.add(n);
+    for (const p of (Q[n]?.previous || [])) {
+      if (set.has(p)) visit(p);
+    }
+    result.push(n);
+  }
+  nodes.forEach(visit);
+  return result;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELECTION & PATH
+═══════════════════════════════════════════════════════════════ */
+// Appends one .sq-item row per slug in `path` into `container`, marking
+// `targetSlug` as the highlighted destination ("TARGET"). Shared by the
+// explicit click-to-trace view and the auto-shown tracked-quest view.
+function renderPathItems(container, path, targetSlug) {
+  const eyeSVG = '<svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 16 16"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>';
+  path.forEach((s, i) => {
+    const q = Q[s];
+    const isCurrent = s === targetSlug;
+    const isDone = done.has(s);
+    const isTracking = tracking.has(s);
+    const el = document.createElement('div');
+    el.className = 'sq-item' + (isCurrent ? ' selected' : ' in-path');
+    el.dataset.slug = s;
+    el.style.opacity = (!isCurrent && isDone) ? '0.5' : '';
+    el.innerHTML = `
+      <span class="sq-num">${i + 1}</span>
+      <span class="sq-title" style="flex:1;${isDone&&!isCurrent?'text-decoration:line-through;color:var(--t3)':''}">${q?.title || s.replace(/_/g,' ')}</span>
+      <span class="sq-badge" style="font-size:${isCurrent?'10px':'12px'};color:${isCurrent?'var(--hi)':isDone?'var(--path)':'var(--track)'};font-weight:${isCurrent?'600':'400'}">${isCurrent?'TARGET':isDone?'✓':isTracking?eyeSVG:''}</span>
+    `;
+    el.onclick = () => { if (!isCurrent) selectQuest(s); };
+    el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, s); };
+    el.onmouseenter = e => scheduleHoverCard(e, s);
+    el.onmouseleave = () => cancelHoverCard();
+    container.appendChild(el);
+  });
+}
+
+function selectQuest(slug) {
+  cancelHoverCard();
+  if (selectedSlug === slug) { clearPath(); return; }
+  selectedSlug = slug;
+  pathSlugs = getAncestors(slug);
+
+  const path = getPathToQuest(slug);
+  const depth = path.length - 1; // steps before this quest
+
+  // Sidebar: show the path
+  const sidebar = document.getElementById('sidebar-body');
+  const title = document.getElementById('sidebar-title');
+  title.textContent = depth > 0
+    ? `Path to "${Q[slug]?.title}" (${depth} step${depth!==1?'s':''})`
+    : `"${Q[slug]?.title}" — no prerequisites`;
+
+  sidebar.innerHTML = '';
+  if (path.length <= 1) {
+    sidebar.innerHTML = '<div style="padding:16px 12px;font-size:12px;color:var(--t3)">This is a starting quest — no prerequisites.</div>';
+  } else {
+    renderPathItems(sidebar, path, slug);
+  }
+
+  renderAll();
+  // Scroll to node in tree
+  scrollToNode(slug);
+}
+
+// Shown in the sidebar whenever nothing is explicitly selected: traces the
+// path to every currently tracked quest automatically, so tracking a quest
+// is enough on its own — no click required, and it survives reloads.
+function renderAutoTrackSidebar() {
+  const sidebar = document.getElementById('sidebar-body');
+  const title = document.getElementById('sidebar-title');
+  const tracked = [...tracking].filter(s => Q[s]).sort((a, b) => Q[a].title.localeCompare(Q[b].title));
+
+  sidebar.innerHTML = '';
+  if (!tracked.length) {
+    title.textContent = 'Click a quest to trace path';
+    sidebar.innerHTML = '<div id="no-results" style="padding:16px 12px;font-size:12px;color:var(--t3)">Click any quest in the tree to see its required path, or track a quest to see its path here automatically.</div>';
+    return;
+  }
+
+  title.textContent = `Tracking ${tracked.length} quest${tracked.length !== 1 ? 's' : ''}`;
+  tracked.forEach(slug => {
+    const path = getPathToQuest(slug);
+    const depth = path.length - 1;
+    const hdr = document.createElement('div');
+    hdr.className = 'sidebar-track-hdr';
+    hdr.textContent = depth > 0 ? `${Q[slug].title} (${depth} step${depth !== 1 ? 's' : ''})` : `${Q[slug].title} — ready now`;
+    sidebar.appendChild(hdr);
+    if (path.length > 1) renderPathItems(sidebar, path, slug);
+  });
+}
+
+function clearPath() {
+  selectedSlug = null;
+  pathSlugs = new Set();
+  renderAutoTrackSidebar();
+  renderAll();
+  refreshActiveQuestWidgetIfOpen();
+  refreshMapQuestWidgetIfOpen();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVE QUEST WIDGET — a slide-out drawer showing, for each tracked
+   quest, the very next thing to actually go do (the first not-yet-done
+   quest along its prerequisite path), with a personal checklist over
+   that quest's own objectives.
+═══════════════════════════════════════════════════════════════ */
+
+// The next actionable quest toward a tracked goal: the first step in its
+// path (ancestors, then itself) that isn't done yet. Null if it's all done.
+function nextActionableQuest(trackedSlug) {
+  const path = getPathToQuest(trackedSlug);
+  return path.find(s => !done.has(s)) || null;
+}
+
+function toggleActiveQuestWidget() {
+  const widget = document.getElementById('active-quest-widget');
+  const opening = !widget.classList.contains('vis');
+  widget.classList.toggle('vis', opening);
+  localStorage.setItem('arc-aqw-open', opening ? '1' : '0');
+  if (opening) renderActiveQuestWidget();
+}
+// Restore the widget's open/closed state from the last session, no click required.
+function restoreActiveQuestWidget() {
+  if (localStorage.getItem('arc-aqw-open') !== '1') return;
+  document.getElementById('active-quest-widget').classList.add('vis');
+  renderActiveQuestWidget();
+}
+function refreshActiveQuestWidgetIfOpen() {
+  if (document.getElementById('active-quest-widget').classList.contains('vis')) renderActiveQuestWidget();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUESTS BY MAP WIDGET — pick the map you're about to load into, and
+   see the actual steps (not just quest names) of everything currently
+   available there, so you know exactly what to sidetrack for.
+═══════════════════════════════════════════════════════════════ */
+let mapWidgetSelectedMap = null; // null = showing the map picker
+
+function toggleMapQuestWidget() {
+  const widget = document.getElementById('map-quest-widget');
+  const opening = !widget.classList.contains('vis');
+  widget.classList.toggle('vis', opening);
+  localStorage.setItem('arc-mqw-open', opening ? '1' : '0');
+  if (opening) renderMapQuestWidget();
+}
+function restoreMapQuestWidget() {
+  if (localStorage.getItem('arc-mqw-open') !== '1') return;
+  document.getElementById('map-quest-widget').classList.add('vis');
+  renderMapQuestWidget();
+}
+function refreshMapQuestWidgetIfOpen() {
+  if (document.getElementById('map-quest-widget').classList.contains('vis')) renderMapQuestWidget();
+}
+
+function selectMapInWidget(mapName) {
+  mapWidgetSelectedMap = mapName;
+  renderMapQuestWidget();
+}
+function backToMapSelection() {
+  mapWidgetSelectedMap = null;
+  renderMapQuestWidget();
+}
+
+// { mapName: [slug, ...] } — every currently-available quest, bucketed by map
+// Every real map name that appears anywhere in the data (not just ones with
+// something available right now) — "Any" is handled separately as its own
+// bucket, so it's excluded here.
+function allMapNames() {
+  const names = new Set();
+  Object.values(Q).forEach(q => {
+    (q.location || []).forEach(loc => { if (loc.toLowerCase() !== 'any') names.add(loc); });
+  });
+  return [...names].sort();
+}
+
+function availableQuestsByMap() {
+  const byMap = {};
+  getActive().forEach(slug => {
+    const locs = (Q[slug].location && Q[slug].location.length) ? Q[slug].location : ['Any'];
+    locs.forEach(loc => {
+      const key = loc.toLowerCase() === 'any' ? 'Any Map' : loc;
+      (byMap[key] || (byMap[key] = [])).push(slug);
+    });
+  });
+  return byMap;
+}
+
+function renderMapQuestWidget() {
+  if (mapWidgetSelectedMap) renderMapWidgetSteps(mapWidgetSelectedMap);
+  else renderMapWidgetPicker();
+}
+
+function renderMapWidgetPicker() {
+  const body = document.getElementById('mqw-body');
+  body.innerHTML = '';
+  const byMap = availableQuestsByMap();
+  const anyCount = (byMap['Any Map'] || []).length;
+  // Always show every map the game has, even at 0 available, plus "Any Map" last.
+  const mapNames = [...allMapNames(), 'Any Map'];
+
+  const grid = document.createElement('div');
+  grid.className = 'mqw-map-btn-grid';
+  mapNames.forEach(mapName => {
+    const count = (byMap[mapName] || []).length;
+    const isAnyMap = mapName === 'Any Map';
+    const countLabel = isAnyMap
+      ? `<span class="mqw-any-color">${count} available</span>`
+      : `${count} available` + (anyCount ? ` <span class="mqw-any-color">(+${anyCount} any)</span>` : '');
+    const btn = document.createElement('button');
+    btn.className = 'mqw-map-btn'
+      + (isAnyMap ? ' mqw-map-btn-any' : '')
+      + (count === 0 ? ' mqw-map-btn-empty' : '');
+    btn.innerHTML = `<span class="mqw-map-btn-name">${escapeHtml(mapName)}</span><span class="mqw-map-btn-count">${countLabel}</span>`;
+    btn.onclick = () => selectMapInWidget(mapName);
+    grid.appendChild(btn);
+  });
+  body.appendChild(grid);
+}
+
+// Builds one .mqw-quest-block (title + objective checklist + mark-as-done)
+// for a single quest — shared by the map-specific list and the "Any Map"
+// dropdown so both look and behave identically.
+function buildMapWidgetQuestBlock(slug) {
+  const q = Q[slug];
+  const block = document.createElement('div');
+  block.className = 'mqw-quest-block';
+
+  const title = document.createElement('div');
+  title.className = 'aqw-next-title';
+  title.textContent = q.title;
+  title.onclick = () => selectQuest(slug);
+  block.appendChild(title);
+
+  const list = document.createElement('ul');
+  list.className = 'aqw-obj-list';
+  populateObjectiveChecklist(list, slug, q.objectives || []);
+  block.appendChild(list);
+
+  const doneBtn = document.createElement('button');
+  doneBtn.className = 'aqw-done-btn';
+  const doneBtnFill = document.createElement('span');
+  doneBtnFill.className = 'aqw-done-btn-fill';
+  doneBtnFill.textContent = `✓ Mark "${q.title}" as done`;
+  doneBtn.appendChild(doneBtnFill);
+  doneBtn.onclick = () => toggleDone(slug);
+  block.appendChild(doneBtn);
+
+  return block;
+}
+
+function renderMapWidgetSteps(mapName) {
+  const body = document.getElementById('mqw-body');
+  body.innerHTML = '';
+
+  const backRow = document.createElement('div');
+  backRow.className = 'mqw-back-row';
+  const backBtn = document.createElement('button');
+  backBtn.className = 'mqw-back-btn';
+  backBtn.textContent = '← Maps';
+  backBtn.onclick = backToMapSelection;
+  const label = document.createElement('span');
+  label.className = 'mqw-current-map';
+  label.textContent = mapName;
+  backRow.appendChild(backBtn);
+  backRow.appendChild(label);
+  body.appendChild(backRow);
+
+  const byMap = availableQuestsByMap();
+  const isAnyMap = mapName === 'Any Map';
+  const mapSpecific = (byMap[mapName] || []).slice().sort((a, b) => Q[a].title.localeCompare(Q[b].title));
+  // Anywhere-playable quests are genuinely doable on every specific map too —
+  // kept in a separate, collapsed-by-default dropdown so the map-specific
+  // list stays the clean, primary view instead of the two blending together.
+  const anyHere = isAnyMap ? [] : (byMap['Any Map'] || []).slice().sort((a, b) => Q[a].title.localeCompare(Q[b].title));
+
+  if (!mapSpecific.length && !anyHere.length) {
+    const empty = document.createElement('div');
+    empty.className = 'aqw-empty';
+    empty.textContent = 'Nothing available on this map right now.';
+    body.appendChild(empty);
+    return;
+  }
+
+  let lastBlock = null;
+  if (!mapSpecific.length) {
+    const empty = document.createElement('div');
+    empty.className = 'aqw-empty';
+    empty.textContent = 'Nothing map-specific right now — check the Any Map quests below.';
+    body.appendChild(empty);
+  } else {
+    mapSpecific.forEach(slug => { lastBlock = buildMapWidgetQuestBlock(slug); body.appendChild(lastBlock); });
+  }
+
+  if (anyHere.length) {
+    // The dropdown's own top border already separates it from what's above —
+    // drop the last block's border so the two don't double up.
+    if (lastBlock) lastBlock.classList.add('mqw-quest-block-noborder');
+
+    const anySection = document.createElement('div');
+    anySection.className = 'mqw-any-section';
+
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'mqw-any-toggle';
+    toggleBtn.innerHTML = `<span class="mqw-any-chevron">▸</span> Any Map quests (${anyHere.length})`;
+
+    const content = document.createElement('div');
+    content.className = 'mqw-any-content';
+    anyHere.forEach(slug => content.appendChild(buildMapWidgetQuestBlock(slug)));
+
+    toggleBtn.onclick = () => {
+      const open = content.classList.toggle('open');
+      toggleBtn.classList.toggle('open', open);
+    };
+
+    anySection.appendChild(toggleBtn);
+    anySection.appendChild(content);
+    body.appendChild(anySection);
+  }
+}
+
+function toggleObjective(slug, idx) {
+  if (!objectiveProgress[slug]) objectiveProgress[slug] = new Set();
+  const set = objectiveProgress[slug];
+  if (set.has(idx)) set.delete(idx); else set.add(idx);
+  saveObjectiveProgress();
+  syncObjectiveCheckboxes(slug, idx);
+}
+
+// The same quest's objectives can be on screen in several places at once
+// (Active Quest widget, Quests by Map widget, the click-open modal, the
+// hover card) — checking one should ripple to every other instance of it.
+function syncObjectiveCheckboxes(slug, idx) {
+  const checked = !!(objectiveProgress[slug] && objectiveProgress[slug].has(idx));
+  document.querySelectorAll('input[type="checkbox"][data-obj-slug]').forEach(cb => {
+    if (cb.dataset.objSlug !== slug || Number(cb.dataset.objIdx) !== idx) return;
+    cb.checked = checked;
+    const textEl = cb.parentElement.querySelector('.aqw-obj-text');
+    if (textEl) textEl.classList.toggle('aqw-obj-checked', checked);
+  });
+}
+
+// Marking a quest done implies its required steps got done too — keep the
+// individual checklist consistent instead of leaving boxes unchecked for a
+// quest that's actually finished. Optional steps aren't forced, since
+// finishing the quest never required them in the first place.
+function markAllRequiredObjectivesDone(slug) {
+  const objectives = Q[slug]?.objectives || [];
+  if (!objectives.length) return;
+  if (!objectiveProgress[slug]) objectiveProgress[slug] = new Set();
+  const set = objectiveProgress[slug];
+  let changed = false;
+  objectives.forEach((o, i) => {
+    if (!o.optional && !set.has(i)) { set.add(i); changed = true; }
+  });
+  if (!changed) return;
+  saveObjectiveProgress();
+  objectives.forEach((o, i) => { if (!o.optional) syncObjectiveCheckboxes(slug, i); });
+}
+
+// Applies the same "done implies required steps done" rule retroactively to
+// whatever was already marked done before this feature existed — runs once
+// at boot (after Q loads); a no-op for anything already consistent.
+function backfillDoneObjectives() {
+  done.forEach(slug => markAllRequiredObjectivesDone(slug));
+}
+
+// Fills a target <ul> with one checkbox item per objective. Shared by the
+// Active Quest widget, the Quests by Map widget, the click-open modal, and
+// the hover card, so all four render (and sync) identically.
+function populateObjectiveChecklist(ulEl, slug, objectives) {
+  ulEl.innerHTML = '';
+  if (!objectives.length) {
+    ulEl.innerHTML = '<li class="qd-empty">No listed objectives</li>';
+    return;
+  }
+  const progressSet = objectiveProgress[slug] || new Set();
+  objectives.forEach((o, i) => {
+    const li = document.createElement('li');
+    const label = document.createElement('label');
+    label.className = 'aqw-obj-item';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.dataset.objSlug = slug;
+    cb.dataset.objIdx = i;
+    cb.checked = progressSet.has(i);
+    const box = document.createElement('span');
+    box.className = 'aqw-cb-box' + (o.optional ? ' aqw-cb-box-optional' : '');
+    const text = document.createElement('span');
+    text.className = 'aqw-obj-text';
+    text.textContent = o.text;
+    if (o.optional) {
+      const tag = document.createElement('span');
+      tag.className = 'qd-optional-tag';
+      tag.textContent = ' optional';
+      text.appendChild(tag);
+    }
+    if (cb.checked) text.classList.add('aqw-obj-checked');
+    cb.onchange = () => toggleObjective(slug, i);
+    label.appendChild(cb);
+    label.appendChild(box);
+    label.appendChild(text);
+    li.appendChild(label);
+    ulEl.appendChild(li);
+  });
+}
+
+function renderActiveQuestWidget() {
+  const body = document.getElementById('aqw-body');
+  body.innerHTML = '';
+  const tracked = [...tracking].filter(s => Q[s]).sort((a, b) => Q[a].title.localeCompare(Q[b].title));
+
+  if (!tracked.length) {
+    body.innerHTML = '<div class="aqw-empty">Track a quest (right-click it → Track quest) to see what to do next here.</div>';
+    return;
+  }
+
+  tracked.forEach(trackedSlug => {
+    const section = document.createElement('div');
+    section.className = 'aqw-section';
+
+    const goalHdr = document.createElement('div');
+    goalHdr.className = 'aqw-goal';
+    goalHdr.textContent = `Goal: ${Q[trackedSlug].title}`;
+    section.appendChild(goalHdr);
+
+    const nextSlug = nextActionableQuest(trackedSlug);
+    if (!nextSlug) {
+      const msg = document.createElement('div');
+      msg.className = 'aqw-done-msg';
+      msg.textContent = '✓ All prerequisites complete';
+      section.appendChild(msg);
+      body.appendChild(section);
+      return;
+    }
+
+    const nq = Q[nextSlug];
+    const nextTitle = document.createElement('div');
+    nextTitle.className = 'aqw-next-title';
+    nextTitle.textContent = nq.title;
+    if (nextSlug !== trackedSlug) {
+      const tag = document.createElement('span');
+      tag.className = 'aqw-next-tag';
+      tag.textContent = '(prerequisite)';
+      nextTitle.appendChild(tag);
+    }
+    nextTitle.onclick = () => selectQuest(nextSlug);
+    section.appendChild(nextTitle);
+
+    const list = document.createElement('ul');
+    list.className = 'aqw-obj-list';
+    populateObjectiveChecklist(list, nextSlug, nq.objectives || []);
+    section.appendChild(list);
+
+    const doneBtn = document.createElement('button');
+    doneBtn.className = 'aqw-done-btn';
+    const doneBtnFill = document.createElement('span');
+    doneBtnFill.className = 'aqw-done-btn-fill';
+    doneBtnFill.textContent = `✓ Mark "${nq.title}" as done`;
+    doneBtn.appendChild(doneBtnFill);
+    doneBtn.onclick = () => toggleDone(nextSlug);
+    section.appendChild(doneBtn);
+
+    body.appendChild(section);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH / FILTER
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('inp-search').addEventListener('input', function() {
+  const srch = this.value.toLowerCase().trim();
+  if (viewMode === 'list') renderList(srch);
+  else renderTree(srch);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════════════ */
+const NW = 176, NH = 58, HGAP = 30, VGAP = 84;
+
+// Map line shown under the title on every node — trader is shown as an icon instead of text
+function questMapLabel(q, maxLen) {
+  const locs = q.location || [];
+  const loc = locs.length > 1 ? `${locs.length} maps` : (locs[0] || '—');
+  return loc.length > maxLen ? loc.slice(0, maxLen - 1) + '…' : loc;
+}
+
+function computeLayout(nodes, edges) {
+  if (!nodes.length) return { pos:{}, W:800, H:300 };
+  const set = new Set(nodes);
+  const out = {}, indeg = {};
+  nodes.forEach(n => { out[n]=[]; indeg[n]=0; });
+  edges.forEach(([a,b]) => { if(set.has(a)&&set.has(b)){ out[a].push(b); indeg[b]++; }});
+
+  const layer={}, tmp={...indeg}, done=new Set();
+  const q = nodes.filter(n=>indeg[n]===0);
+  let L=0;
+  while(q.length){
+    const nxt=[];
+    for(const n of q){
+      if(done.has(n)) continue;
+      layer[n]=L; done.add(n);
+      for(const m of out[n]){ tmp[m]--; if(tmp[m]===0) nxt.push(m); }
+    }
+    q.length=0; q.push(...nxt); L++;
+  }
+  nodes.forEach(n=>{ if(layer[n]===undefined) layer[n]=L; });
+
+  const byL={};
+  nodes.forEach(n=>{ (byL[layer[n]]||(byL[layer[n]]=[]) ).push(n); });
+  const maxL = Math.max(...Object.keys(byL).map(Number));
+
+  // Barycenter crossings reduction
+  for(let pass=0;pass<4;pass++){
+    for(let l=1;l<=maxL;l++){
+      (byL[l]||[]).sort((a,b)=>{
+        const bc=n=>{
+          const prev=edges.filter(([,t])=>t===n).map(([s])=>s);
+          if(!prev.length) return 0;
+          const prow=byL[l-1]||[];
+          return prev.reduce((sum,p)=>sum+(prow.indexOf(p)<0?0:prow.indexOf(p)),0)/prev.length;
+        };
+        return bc(a)-bc(b);
+      });
+    }
+  }
+
+  let maxCols=0;
+  for(let l=0;l<=maxL;l++) maxCols=Math.max(maxCols,(byL[l]||[]).length);
+  const W = Math.max(1100, maxCols*(NW+HGAP)+120);
+  const pos={};
+  for(let l=0;l<=maxL;l++){
+    const row=byL[l]||[];
+    const rowW=row.length*(NW+HGAP)-HGAP;
+    const sx=(W-rowW)/2;
+    row.forEach((n,i)=>{ pos[n]={x:sx+i*(NW+HGAP), y:l*(NH+VGAP)+40}; });
+  }
+  const H=(maxL+1)*(NH+VGAP)+100;
+  // Expose layer map for edge routing
+  return {pos, W, H, layer, byL, maxL};
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER TREE
+═══════════════════════════════════════════════════════════════ */
+function renderTree(srch) {
+  const search = (srch !== undefined ? srch : document.getElementById('inp-search').value).toLowerCase().trim();
+
+  let nodes = Object.keys(Q).filter(k => {
+    if (Q[k].error) return false;
+    return true;
+  });
+  const nset = new Set(nodes);
+  const edges = [];
+  nodes.forEach(n => (Q[n].next||[]).forEach(nx=>{ if(nset.has(nx)) edges.push([n,nx]); }));
+
+  if (!nodes.length) { document.getElementById('tree').innerHTML=''; return; }
+
+  const {pos,W,H,layer,byL} = computeLayout(nodes, edges);
+  const searchMatches = search ? new Set(nodes.filter(n=>questMatchesSearch(n, search))) : null;
+  const activeSet = new Set(getActive());
+
+  // Auto-trace the prerequisite path for every currently tracked quest —
+  // no click/selection needed, and it survives reloads since it's driven
+  // purely by the persisted `tracking` set rather than the transient selection.
+  const autoPath = new Set();
+  tracking.forEach(t => getAncestors(t).forEach(a => autoPath.add(a)));
+
+  let s = `<defs>
+<marker id="ar"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="#2e3548" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+<marker id="ar-p"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="#3fcf8e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+<marker id="ar-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="#5b8fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>`;
+
+  // Edges — short spans use a simple cubic bezier,
+  // long spans (>2 layers) route out to the side to avoid overlaying nodes
+  edges.forEach(([a,b])=>{
+    const pa=pos[a],pb=pos[b]; if(!pa||!pb) return;
+    const x1=pa.x+NW/2, y1=pa.y+NH;
+    const x2=pb.x+NW/2, y2=pb.y;
+    const inPath = (pathSlugs.has(a) && (pathSlugs.has(b) || b===selectedSlug))
+      || (autoPath.has(a) && (autoPath.has(b) || tracking.has(b)));
+    const isSel  = a===selectedSlug || b===selectedSlug;
+    const hiSearch = searchMatches && (searchMatches.has(a)||searchMatches.has(b));
+    let stroke='#1e2330', sw=.7, marker='ar';
+    if(inPath)    { stroke='#3fcf8e'; sw=2.0; marker='ar-p'; }
+    else if(isSel){ stroke='#3fcf8e'; sw=1.3; marker='ar-p'; }
+    else if(hiSearch){ stroke='#5b8fff'; sw=1.3; marker='ar-hi'; }
+
+    const layerSpan = (layer[b]||0) - (layer[a]||0);
+    let d;
+    if (layerSpan <= 1) {
+      // Adjacent layers only — no layer is skipped, so nothing can sit in the
+      // gap. Anything spanning 2+ layers skips at least one full layer, which
+      // can contain another node in the same column (e.g. a parallel branch
+      // that reconverges later) — that case must use the side-detour route
+      // below or the curve cuts straight through it.
+      const cy = (y1 + y2) / 2;
+      d = `M${x1} ${y1} C${x1} ${cy} ${x2} ${cy} ${x2} ${y2}`;
+    } else {
+      // Long edge: detour to the right side of the canvas to avoid crossing nodes
+      // Pick a side: right if source node is in the right half, else left
+      const midX = W / 2;
+      const goRight = x1 >= midX;
+      // Margin outside the rightmost/leftmost node in any intervening layer
+      let extremeX = goRight ? 0 : W;
+      for (let l = (layer[a]||0); l <= (layer[b]||0); l++) {
+        const row = byL[l] || [];
+        row.forEach(n => {
+          const p = pos[n];
+          if (!p) return;
+          if (goRight) extremeX = Math.max(extremeX, p.x + NW);
+          else         extremeX = Math.min(extremeX, p.x);
+        });
+      }
+      const sideX = goRight ? extremeX + 22 : extremeX - 22;
+      // Route: down from source → across to side → down alongside → across to target
+      const y1exit = y1 + 10;
+      const y2enter = y2 - 10;
+      d = `M${x1} ${y1} L${x1} ${y1exit} C${x1} ${y1exit+20} ${sideX} ${y1exit+20} ${sideX} ${y1exit+40}`
+        + ` L${sideX} ${y2enter-40}`
+        + ` C${sideX} ${y2enter-20} ${x2} ${y2enter-20} ${x2} ${y2enter}`
+        + ` L${x2} ${y2}`;
+    }
+    s += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${sw}" marker-end="url(#${marker})"/>`;
+  });
+
+  // Nodes
+  nodes.forEach(n=>{
+    const p=pos[n]; if(!p) return;
+    const q=Q[n];
+    const isSel      = n === selectedSlug;
+    const inPath     = pathSlugs.has(n) || autoPath.has(n);
+    const isSearch   = searchMatches?.has(n);
+    const isDone     = done.has(n);
+    const isActive   = activeSet.has(n);
+    const isTracking = tracking.has(n);
+    const isDim      = (searchMatches && !isSearch) || (selectedSlug && !isSel && !inPath && !isSearch && !isActive && !isTracking);
+
+    let fillColor, strokeColor, textColor, strokeW=0.5, fillOpacity;
+    const base = NODE_COLOR;
+
+    if(isSel) {
+      fillColor='#5b8fff'; strokeColor='#5b8fff'; fillOpacity=.3; textColor='#c0d4ff'; strokeW=1.5;
+    } else if(inPath && !done.has(n)) {
+      // Path quest not yet done → blue
+      fillColor='#4a8fff'; strokeColor='#4a8fff'; fillOpacity=.22; textColor='#93b8ff'; strokeW=1;
+    } else if(inPath && done.has(n)) {
+      // Path quest already done → muted green
+      fillColor='#3fcf8e'; strokeColor='#3fcf8e'; fillOpacity=.12; textColor='#3fcf8e'; strokeW=0.5;
+    } else if(isTracking) {
+      fillColor='var(--track)'; strokeColor='var(--track)'; fillOpacity=.22; textColor='#a8d4f8'; strokeW=1;
+    } else if(isActive) {
+      fillColor='#a78bfa'; strokeColor='#a78bfa'; fillOpacity=.22; textColor='#c4b5fd'; strokeW=1;
+    } else if(isDone) {
+      fillColor=base; strokeColor=base; fillOpacity=.07; textColor=base; strokeW=0.5;
+    } else if(isSearch) {
+      fillColor=base; strokeColor=base; fillOpacity=.3; textColor=base; strokeW=1.2;
+    } else if(isDim) {
+      fillColor=base; strokeColor=base; fillOpacity=.08; textColor=base; strokeW=0.5;
+    } else {
+      fillColor=base; strokeColor=base; fillOpacity=.24; textColor=base; strokeW=0.8;
+    }
+
+    const textOpacity = isDim ? .35 : isDone ? .45 : 1;
+    const lbl = q.title.length>23 ? q.title.slice(0,22)+'…' : q.title;
+    const stepCount = (q.objectives || []).filter(o => !o.optional).length;
+    const showSteps = stepCount > 1;
+    const mapLbl = questMapLabel(q, showSteps ? 14 : 24).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const traderIconUrl = q.trader && TraderIcons[q.trader];
+    const esc = n.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const subOpacity = isDim ? .3 : isDone ? .35 : .6;
+    const ICONSZ = 16;
+
+    // Sub-row: trader portrait (if known) + map name on the left, step count
+    // written directly on the right — no floating badge, all inside the node.
+    const mapStartX = p.x + 10 + (traderIconUrl ? ICONSZ + 6 : 0);
+    const traderIconMarkup = traderIconUrl
+      ? `<image href="${traderIconUrl}" x="${p.x+10}" y="${p.y+35}" width="${ICONSZ}" height="${ICONSZ}"
+  style="opacity:${subOpacity};pointer-events:none;clip-path:circle(8px at 8px 8px)"/>`
+      : '';
+    const mapText = `<text x="${mapStartX}" y="${p.y+44}" text-anchor="start" dominant-baseline="central"
+  style="font-family:'Inter',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.02em;text-transform:uppercase;fill:${textColor};fill-opacity:${subOpacity};pointer-events:none">${mapLbl}</text>`;
+    const stepsText = showSteps
+      ? `<text x="${p.x+NW-10}" y="${p.y+44}" text-anchor="end" dominant-baseline="central"
+  style="font-family:'Inter',sans-serif;font-size:9px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;fill:${textColor};fill-opacity:${subOpacity};pointer-events:none">${stepCount} steps</text>`
+      : '';
+    const subRow = traderIconMarkup + mapText + stepsText;
+
+    // Corner badge: ✓ for done, eye for tracking
+    const badge = isDone
+      ? `<circle cx="${p.x+NW-10}" cy="${p.y+10}" r="7" fill="#3fcf8e" fill-opacity="0.9"/>
+<text x="${p.x+NW-10}" y="${p.y+10}" text-anchor="middle" dominant-baseline="central"
+  style="font-size:9px;fill:#0c0e12;font-weight:700;pointer-events:none">✓</text>`
+      : isTracking
+      ? `<circle cx="${p.x+NW-10}" cy="${p.y+10}" r="7" fill="var(--track)" fill-opacity="0.9"/>
+<path d="M${p.x+NW-15} ${p.y+10} C${p.x+NW-15} ${p.y+10} ${p.x+NW-12} ${p.y+6} ${p.x+NW-10} ${p.y+6} C${p.x+NW-8} ${p.y+6} ${p.x+NW-5} ${p.y+10} ${p.x+NW-5} ${p.y+10} C${p.x+NW-5} ${p.y+10} ${p.x+NW-8} ${p.y+14} ${p.x+NW-10} ${p.y+14} C${p.x+NW-12} ${p.y+14} ${p.x+NW-15} ${p.y+10} ${p.x+NW-15} ${p.y+10} Z" fill="none" stroke="white" stroke-width="1.3" pointer-events="none"/>
+<circle cx="${p.x+NW-10}" cy="${p.y+10}" r="2" fill="white" pointer-events="none"/>`
+      : '';
+
+    s += `<g class="qn" onclick="selectQuest('${esc}')" oncontextmenu="showCtxMenu(event,'${esc}')"
+  onmouseenter="scheduleHoverCard(event,'${esc}')" onmouseleave="cancelHoverCard()">
+<rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="4"
+  fill="${fillColor}" fill-opacity="${fillOpacity}"
+  stroke="${strokeColor}" stroke-width="${strokeW}" stroke-opacity="${isDim?.25:.8}"/>
+<line x1="${p.x+10}" y1="${p.y+30}" x2="${p.x+NW-10}" y2="${p.y+30}" stroke="${strokeColor}" stroke-opacity="${isDim?.12:.25}" stroke-width="1"/>
+<text x="${p.x+NW/2}" y="${p.y+18}" text-anchor="middle" dominant-baseline="central"
+  style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:.01em;fill:${textColor};fill-opacity:${textOpacity};pointer-events:none;${isDone?'text-decoration:line-through;':''}"
+>${lbl}</text>
+${subRow}
+${badge}
+</g>`;
+  });
+
+  const svg = document.getElementById('tree');
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.innerHTML = s;
+  document.getElementById('sbar-right').textContent = `${nodes.length} quests · ${done.size} done`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER LIST
+═══════════════════════════════════════════════════════════════ */
+function renderList(srch) {
+  const search = (srch !== undefined ? srch : document.getElementById('inp-search').value).toLowerCase().trim();
+  const sidebar = document.getElementById('sidebar-body');
+  sidebar.innerHTML = '';
+
+  let items = Object.keys(Q).filter(k => {
+    if (Q[k].error) return false;
+    if (search && !questMatchesSearch(k, search)) return false;
+    return true;
+  });
+
+  // Sort alphabetically
+  items.sort((a,b) => Q[a].title.localeCompare(Q[b].title));
+
+  if (!items.length) {
+    sidebar.innerHTML = '<div id="no-results" style="padding:16px 12px;font-size:12px;color:var(--t3)">No quests found.</div>';
+    return;
+  }
+
+  items.forEach(slug => {
+    const q = Q[slug];
+    const prereqs = getAncestors(slug).size;
+    const isDone = done.has(slug);
+    const el = document.createElement('div');
+    el.className = 'sq-item' + (slug===selectedSlug?' selected':'') + (isDone?' in-path':'');
+    el.style.opacity = isDone ? '0.5' : '';
+    el.innerHTML = `
+      <span style="flex:1;${isDone?'text-decoration:line-through;color:var(--t3)':''}">${q.title}</span>
+      ${isDone ? '<span style="font-size:11px;color:var(--path)">✓</span>' : (prereqs>0 ? `<span class="sq-depth">${prereqs} req</span>` : '')}
+    `;
+    el.onclick = () => selectQuest(slug);
+    el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, slug); };
+    el.onmouseenter = e => scheduleHoverCard(e, slug);
+    el.onmouseleave = () => cancelHoverCard();
+    sidebar.appendChild(el);
+  });
+
+  const doneCount = items.filter(s => done.has(s)).length;
+  document.getElementById('sidebar-title').textContent =
+    `${items.length} quests${doneCount ? ` · ${doneCount} done` : ''}`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════════════════════════════════ */
+function renderAll() {
+  if (viewMode === 'tree') renderTree();
+  else renderList();
+  renderActive();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER ACTIVE PANEL
+═══════════════════════════════════════════════════════════════ */
+function renderActive() {
+  const active = getActive();
+  const tracked = [...tracking].filter(s => Q[s] && !done.has(s));
+  const body = document.getElementById('active-body');
+  const total = new Set([...active, ...tracked]).size;
+  document.getElementById('active-count').textContent = total;
+
+  if (!Object.keys(Q).length) {
+    body.innerHTML = '<div id="active-empty">Load quests to see what\'s available</div>';
+    return;
+  }
+
+  body.innerHTML = '';
+
+  // Tracked section
+  if (tracked.length) {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'padding:6px 12px 3px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--track);';
+    hdr.textContent = 'Tracking';
+    body.appendChild(hdr);
+    tracked.forEach(slug => {
+      const q = Q[slug];
+      const el = document.createElement('div');
+      el.className = 'active-item' + (slug === selectedSlug ? ' focused' : '');
+      el.style.cssText = 'color:#a8d4f8;border-left-color:var(--track);background:rgba(96,160,224,.08)';
+      el.innerHTML = `<span style="display:inline-flex;align-items:center;margin-right:4px"><svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 16 16"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg></span><span style="flex:1">${q.title}</span>`;
+      el.onclick = () => selectQuest(slug);
+      el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, slug); };
+      el.onmouseenter = e => scheduleHoverCard(e, slug);
+      el.onmouseleave = () => cancelHoverCard();
+      body.appendChild(el);
+    });
+  }
+
+  // Available section
+  active.sort((a, b) => {
+    const aReqs = (Q[a].previous || []).length, bReqs = (Q[b].previous || []).length;
+    if (aReqs !== bReqs) return aReqs - bReqs;
+    return Q[a].title.localeCompare(Q[b].title);
+  });
+
+  if (active.length) {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = `padding:${tracked.length?'10px':'6px'} 12px 3px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);`;
+    hdr.textContent = 'Available';
+    body.appendChild(hdr);
+    active.forEach(slug => {
+      const q = Q[slug];
+      const el = document.createElement('div');
+      el.className = 'active-item' + (slug === selectedSlug ? ' focused' : '');
+      el.innerHTML = `<span style="flex:1">${q.title}</span>`;
+      el.onclick = () => selectQuest(slug);
+      el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, slug); };
+      el.onmouseenter = e => scheduleHoverCard(e, slug);
+      el.onmouseleave = () => cancelHoverCard();
+      body.appendChild(el);
+    });
+  }
+
+  if (!tracked.length && !active.length) {
+    body.innerHTML = '<div id="active-empty">No quests available — mark prerequisites as done to unlock more</div>';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPEDITION RESET — wipes all progress and starts fresh
+═══════════════════════════════════════════════════════════════ */
+function startExpedition() {
+  const questCount = Object.keys(Q).length;
+  if (!confirm(`Start a new expedition?\n\nThis clears all ${done.size} completed and ${tracking.size} tracked quest${(done.size+tracking.size)!==1?'s':''}. This cannot be undone.`)) return;
+  done = new Set();
+  tracking = new Set();
+  objectiveProgress = {};
+  saveDone();
+  saveObjectiveProgress();
+  clearPath(); // resets selection/sidebar and re-renders
+  setStatus('ok', 'New expedition started', `${questCount} quests · 0 done`);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REWARDS CATALOG — preview every reward in the game, and jump
+   straight to tracking whichever quest grants a reward you want.
+
+   Two kinds of item source per quest:
+     - "reward"  → given when the quest is completed (done)
+     - "granted" → given the moment the quest is accepted (tracked),
+       e.g. Safe Passage hands you grenades on acceptance, before
+       you've finished it. Obtained-state differs accordingly.
+═══════════════════════════════════════════════════════════════ */
+let rewardIndex = null; // { rewardName: [{slug, qty, kind}] }
+
+const REWARD_CATEGORIES = ['Blueprints', 'Utility and Healing', 'Skins', 'Miscellaneous'];
+
+function rewardCategory(name) {
+  if (/blueprint/i.test(name)) return 'Blueprints';
+  if (/outfit|\(.*color\)|charm|emote/i.test(name)) return 'Skins';
+  if (/grenade|\bmine\b|\btrap\b|shield|vita|adrenaline|bandage|antiseptic|defibrillator|tactical mk|light stick|binoculars|zipline|barricade kit|door blocker|noisemaker|surge shield recharger|combat mk|looting mk|firecracker|flame spray|fireworks|flare/i.test(name)) return 'Utility and Healing';
+  return 'Miscellaneous';
+}
+
+// Real in-game icon (from the wiki) for a reward; falls back to a generic
+// swatch if we don't have icon data for its item slug yet.
+function rewardIconUrl(sources) {
+  for (const src of sources) {
+    if (src.item && ItemIcons[src.item]) return ItemIcons[src.item];
+  }
+  return null;
+}
+
+function buildRewardIndex() {
+  rewardIndex = {};
+  Object.keys(Q).forEach(slug => {
+    const q = Q[slug];
+    if (q.error) return;
+    (q.rewards || []).forEach(r => {
+      (rewardIndex[r.name] || (rewardIndex[r.name] = [])).push({ slug, qty: r.qty, item: r.item, kind: 'reward' });
+    });
+    (q.grantedItems || []).forEach(r => {
+      (rewardIndex[r.name] || (rewardIndex[r.name] = [])).push({ slug, qty: r.qty, item: r.item, kind: 'granted' });
+    });
+  });
+}
+
+// Real in-game icon representing each category button (not an emoji) —
+// one representative item's actual wiki icon per bucket.
+const REWARD_CAT_REPRESENTATIVE_ITEM = {
+  'Blueprints': 'Vita_Spray_Blueprint',
+  'Utility and Healing': 'Vita_Shot',
+  'Skins': 'Outfits',
+  'Miscellaneous': 'Coins',
+};
+let currentRewardsCategory = null;
+
+// A "granted" item is obtained the moment you accept the quest (tracking or done);
+// a completion "reward" is only obtained once the quest is actually done.
+function isObtained(src) {
+  return src.kind === 'granted' ? (done.has(src.slug) || tracking.has(src.slug)) : done.has(src.slug);
+}
+
+function openRewards() {
+  if (!rewardIndex) buildRewardIndex();
+  document.getElementById('rewards-overlay').classList.add('vis');
+  renderRewardCategoryGrid();
+}
+function closeRewards() {
+  document.getElementById('rewards-overlay').classList.remove('vis');
+  document.getElementById('rewards-subcat-overlay').classList.remove('vis');
+}
+
+function renderRewardCategoryGrid() {
+  const names = Object.keys(rewardIndex);
+  const totalInstances = names.reduce((sum, n) => sum + rewardIndex[n].length, 0);
+  document.getElementById('rewards-sub').textContent =
+    `${names.length} unique rewards · ${totalInstances} reward drops across ${Object.keys(Q).length} quests`;
+
+  const grid = document.getElementById('rewards-cat-grid');
+  grid.innerHTML = '';
+  REWARD_CATEGORIES.forEach(cat => {
+    const catNames = names.filter(n => rewardCategory(n) === cat);
+    const sources = catNames.flatMap(n => rewardIndex[n]);
+    const gotQty = sources.filter(isObtained).reduce((s, src) => s + src.qty, 0);
+    const totalQty = sources.reduce((s, src) => s + src.qty, 0);
+    const iconUrl = ItemIcons[REWARD_CAT_REPRESENTATIVE_ITEM[cat]];
+    const iconHtml = iconUrl
+      ? `<img class="rcb-icon-img" src="${iconUrl}" alt="" loading="lazy">`
+      : `<span class="rcb-icon-fallback">?</span>`;
+    const btn = document.createElement('button');
+    btn.className = 'rewards-cat-btn';
+    btn.innerHTML = `
+      ${iconHtml}
+      <span class="rcb-name">${cat}</span>
+      <span class="rcb-count">${catNames.length} reward${catNames.length !== 1 ? 's' : ''}</span>
+      <span class="rcb-ratio${gotQty ? ' rcb-ratio-done' : ''}">(${gotQty}/${totalQty})</span>
+    `;
+    btn.onclick = () => openRewardsCategory(cat);
+    grid.appendChild(btn);
+  });
+}
+
+function openRewardsCategory(cat) {
+  currentRewardsCategory = cat;
+  document.getElementById('rewards-subcat-title').textContent = cat;
+  document.getElementById('rewards-subcat-overlay').classList.add('vis');
+  document.getElementById('inp-rewards-search').value = '';
+  renderRewards('');
+  setTimeout(() => document.getElementById('inp-rewards-search').focus(), 0);
+}
+// back=false → just step back to the category grid; back=true (✕ or backdrop click) → close everything
+function closeRewardsCategory(fullyClose) {
+  document.getElementById('rewards-subcat-overlay').classList.remove('vis');
+  if (fullyClose) closeRewards();
+  else renderRewardCategoryGrid(); // refresh counts in case tracking/done changed while browsing
+}
+
+function renderRewards(search) {
+  const body = document.getElementById('rewards-body');
+  const names = Object.keys(rewardIndex)
+    .filter(n => rewardCategory(n) === currentRewardsCategory)
+    .sort((a, b) => a.localeCompare(b));
+  const q = (search || '').toLowerCase().trim();
+
+  const filtered = names.filter(name => {
+    if (!q) return true;
+    if (name.toLowerCase().includes(q)) return true;
+    return rewardIndex[name].some(src => (Q[src.slug]?.title || '').toLowerCase().includes(q));
+  });
+
+  document.getElementById('rewards-subcat-sub').textContent =
+    `${names.length} unique reward${names.length !== 1 ? 's' : ''} in ${currentRewardsCategory}`
+    + (q ? ` · ${filtered.length} match${filtered.length !== 1 ? 'es' : ''}` : '');
+
+  if (!filtered.length) {
+    body.innerHTML = '<div id="rewards-empty">No rewards match your search.</div>';
+    return;
+  }
+
+  body.innerHTML = '';
+  filtered.forEach(name => {
+    const sources = rewardIndex[name].slice().sort((a, b) => (Q[a.slug]?.title || '').localeCompare(Q[b.slug]?.title || ''));
+    const gotQty = sources.filter(isObtained).reduce((sum, src) => sum + src.qty, 0);
+    const totalQty = sources.reduce((sum, src) => sum + src.qty, 0);
+    const iconUrl = rewardIconUrl(sources);
+    const grp = document.createElement('div');
+    grp.className = 'reward-group';
+    const escName = name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const iconHtml = iconUrl
+      ? `<img class="rg-icon-img" src="${iconUrl}" alt="" loading="lazy">`
+      : `<span class="rg-icon-fallback">?</span>`;
+    grp.innerHTML = `
+      <div class="reward-group-name">
+        ${iconHtml}
+        <span class="rg-title">${escName}</span>
+        <span class="rg-ratio${gotQty ? ' rg-ratio-done' : ''}">(${gotQty}/${totalQty})</span>
+      </div>
+      <ul class="reward-src-list"></ul>
+    `;
+    const list = grp.querySelector('.reward-src-list');
+    sources.forEach(src => {
+      const qq = Q[src.slug];
+      if (!qq) return;
+      const obtained = isObtained(src);
+      const isTracking = tracking.has(src.slug);
+      const kindTag = src.kind === 'granted' ? 'on accept' : 'on complete';
+      const li = document.createElement('li');
+      li.className = 'reward-src';
+      li.innerHTML = `
+        <span class="rs-qty">${src.qty}×</span>
+        <span class="rs-title${obtained ? ' rs-done' : ''}">${qq.title}</span>
+        <span class="rs-kind">${kindTag}</span>
+        <button class="rs-track${isTracking ? ' active' : ''}">${obtained ? '✓ got it' : isTracking ? '▶ tracking' : 'Track'}</button>
+      `;
+      li.querySelector('.rs-title').onclick = () => { closeRewards(); selectQuest(src.slug); };
+      const btn = li.querySelector('.rs-track');
+      if (!obtained) {
+        btn.onclick = () => { trackFromReward(src.slug); renderRewards(document.getElementById('inp-rewards-search').value); };
+      } else {
+        btn.disabled = true;
+      }
+      list.appendChild(li);
+    });
+    body.appendChild(grp);
+  });
+}
+
+// Track the quest that grants a chosen reward, and jump to its path in the tree
+function trackFromReward(slug) {
+  if (!tracking.has(slug)) toggleTracking(slug); // toggleTracking also un-does "done" if needed
+  selectQuest(slug);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUEST DETAILS — what to do, who gave it, which map, and its items
+═══════════════════════════════════════════════════════════════ */
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+// The modal's pills (.qd-pill) use plain rounded corners, so a single span is
+// fine. The hover-card's (.qhc-pill) use a clip-path corner cut, which needs
+// the two-layer frame+fill trick to get a border along the diagonal edge.
+function pillHtml(prefix, text) {
+  const t = escapeHtml(text);
+  return prefix === 'qhc' ? `<span class="qhc-pill-frame"><span class="qhc-pill">${t}</span></span>` : `<span class="qd-pill">${t}</span>`;
+}
+
+function renderQdItemList(items) {
+  if (!items || !items.length) return '<li class="qd-empty">None</li>';
+  return items.map(it => {
+    const iconUrl = it.item && ItemIcons[it.item];
+    const iconHtml = iconUrl
+      ? `<img class="qd-item-icon" src="${iconUrl}" alt="" loading="lazy">`
+      : `<span class="qd-item-icon-fallback">?</span>`;
+    return `<li class="qd-item">${iconHtml}<span class="qd-item-qty">${it.qty}×</span><span>${escapeHtml(it.name)}</span></li>`;
+  }).join('');
+}
+
+// Fills a details panel's DOM (ids `${prefix}-title`, `${prefix}-trader`, etc.)
+// from a quest's data. Shared by the click-to-open modal (prefix "qd") and
+// the hover card (prefix "qhc") so both stay in lockstep with one source.
+function populateQuestInfoInto(prefix, slug) {
+  const q = Q[slug];
+  if (!q) return false;
+  document.getElementById(`${prefix}-title`).textContent = q.title;
+
+  const traderEl = document.getElementById(`${prefix}-trader`);
+  const traderIconUrl = q.trader && TraderIcons[q.trader];
+  traderEl.innerHTML = traderIconUrl
+    ? `<img src="${traderIconUrl}" alt="${escapeHtml(q.trader)}" title="${escapeHtml(q.trader)}" class="trader-icon">`
+    : escapeHtml(q.trader || '—');
+
+  const locs = q.location || [];
+  const isAnyMap = locs.length === 1 && locs[0].toLowerCase() === 'any';
+  const locWrap = document.getElementById(`${prefix}-location`);
+  if (!locs.length) {
+    locWrap.innerHTML = pillHtml(prefix, 'Map: —');
+  } else if (isAnyMap) {
+    locWrap.innerHTML = pillHtml(prefix, 'Any map');
+  } else {
+    locWrap.innerHTML = locs.map(loc => pillHtml(prefix, loc)).join('');
+  }
+
+  const oneRoundEl = document.getElementById(`${prefix}-oneround`);
+  if (oneRoundEl) oneRoundEl.style.display = q.inOneRound ? '' : 'none';
+
+  populateObjectiveChecklist(document.getElementById(`${prefix}-objectives`), slug, q.objectives || []);
+
+  const granted = q.grantedItems || [];
+  const grantedSection = document.getElementById(`${prefix}-granted-section`);
+  if (grantedSection) grantedSection.style.display = granted.length ? '' : 'none';
+  document.getElementById(`${prefix}-granted`).innerHTML = renderQdItemList(granted);
+  document.getElementById(`${prefix}-rewards`).innerHTML = renderQdItemList(q.rewards);
+  return true;
+}
+
+function showQuestDetail(slug) {
+  if (!populateQuestInfoInto('qd', slug)) return;
+  document.getElementById('quest-detail-overlay').classList.add('vis');
+}
+function closeQuestDetail() {
+  document.getElementById('quest-detail-overlay').classList.remove('vis');
+}
+
+/* ── Hover card: same info, shown 0.75s after the pointer rests on a node ── */
+const HOVER_DELAY_MS = 250;
+let hoverTimer = null;
+
+function scheduleHoverCard(e, slug) {
+  cancelHoverCard();
+  const target = e.currentTarget;
+  hoverTimer = setTimeout(() => showHoverCard(target, slug), HOVER_DELAY_MS);
+}
+function cancelHoverCard() {
+  clearTimeout(hoverTimer);
+  hoverTimer = null;
+  document.getElementById('quest-hover-card').classList.remove('vis');
+}
+function showHoverCard(targetEl, slug) {
+  if (!populateQuestInfoInto('qhc', slug)) return;
+  const card = document.getElementById('quest-hover-card');
+  card.classList.add('vis');
+
+  const rect = targetEl.getBoundingClientRect();
+  const cw = card.offsetWidth, ch = card.offsetHeight;
+  const margin = 12;
+  let left = rect.right + margin;
+  if (left + cw > window.innerWidth - margin) left = rect.left - cw - margin;
+  if (left < margin) left = Math.min(rect.left, window.innerWidth - cw - margin);
+  let top = rect.top;
+  if (top + ch > window.innerHeight - margin) top = window.innerHeight - ch - margin;
+  if (top < margin) top = margin;
+  card.style.left = `${left}px`;
+  card.style.top = `${top}px`;
+}
+
+document.getElementById('inp-rewards-search').addEventListener('input', function() {
+  renderRewards(this.value);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   PAN + ZOOM
+═══════════════════════════════════════════════════════════════ */
+const canvasEl = document.getElementById('canvas-wrap');
+const wrapEl   = document.getElementById('svg-wrap');
+let dragging=false, dsx,dsy,dtx,dty;
+
+function applyT(){ wrapEl.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; }
+
+// Persist the pan/zoom transform so reloading the page restores the exact
+// same view instead of re-fitting from scratch every time.
+function saveView(){ localStorage.setItem('arc-view', JSON.stringify({scale, tx, ty})); }
+function loadView(){ try { return JSON.parse(localStorage.getItem('arc-view')); } catch { return null; } }
+
+canvasEl.addEventListener('wheel', e=>{
+  // Let the widgets scroll natively instead of zooming the graph underneath them
+  if (e.target.closest('#active-quest-widget, #map-quest-widget')) return;
+  e.preventDefault();
+  cancelHoverCard();
+  wrapEl.classList.add('dragging'); // no transition during scroll
+  const d = e.deltaY>0?.85:1/.85;
+  const r = canvasEl.getBoundingClientRect();
+  const mx=e.clientX-r.left, my=e.clientY-r.top;
+  tx=mx-(mx-tx)*d; ty=my-(my-ty)*d;
+  scale=Math.max(.08,Math.min(4,scale*d));
+  applyT();
+  clearTimeout(wrapEl._wheelTimer);
+  wrapEl._wheelTimer = setTimeout(()=>{ wrapEl.classList.remove('dragging'); saveView(); }, 80);
+},{passive:false});
+
+canvasEl.addEventListener('mousedown',e=>{
+  if(e.target.closest('#active-quest-widget, #map-quest-widget')) return;
+  cancelHoverCard();
+  if(e.target.closest('.qn')) return;
+  dragging=true; dsx=e.clientX; dsy=e.clientY; dtx=tx; dty=ty;
+  canvasEl.classList.add('grabbing');
+  wrapEl.classList.add('dragging');
+});
+window.addEventListener('mousemove',e=>{
+  if(!dragging) return;
+  tx=dtx+(e.clientX-dsx); ty=dty+(e.clientY-dsy); applyT();
+});
+window.addEventListener('mouseup',()=>{
+  if (dragging) saveView();
+  dragging=false; canvasEl.classList.remove('grabbing'); wrapEl.classList.remove('dragging');
+});
+
+function zoom(f){
+  const r=canvasEl.getBoundingClientRect();
+  const cx=r.width/2,cy=r.height/2;
+  tx=cx-(cx-tx)*f; ty=cy-(cy-ty)*f;
+  scale=Math.max(.08,Math.min(4,scale*f)); applyT();
+  saveView();
+}
+function fitView(){
+  const svg=document.getElementById('tree');
+  const W=parseFloat(svg.getAttribute('width')||800);
+  const H=parseFloat(svg.getAttribute('height')||600);
+  const cw=canvasEl.clientWidth, ch=canvasEl.clientHeight;
+  scale=Math.min(cw/W,ch/H)*.9;
+  tx=(cw-W*scale)/2; ty=20; applyT();
+  saveView();
+}
+function resetZoom(){ scale=1; tx=20; ty=20; applyT(); saveView(); }
+
+function scrollToNode(slug){
+  // Pan so the selected node is visible
+  const svg=document.getElementById('tree');
+  const W=parseFloat(svg.getAttribute('width')||800);
+  const H=parseFloat(svg.getAttribute('height')||600);
+  // Recompute layout to find node position
+  const nodes=Object.keys(Q).filter(k=>!Q[k].error);
+  const nset=new Set(nodes);
+  const edges=[];
+  nodes.forEach(n=>(Q[n].next||[]).forEach(nx=>{ if(nset.has(nx)) edges.push([n,nx]); }));
+  const {pos}=computeLayout(nodes,edges);
+  const p=pos[slug]; if(!p) return;
+  const cw=canvasEl.clientWidth, ch=canvasEl.clientHeight;
+  // Center on node
+  const nx=p.x+NW/2, ny=p.y+NH/2;
+  tx=cw/2-nx*scale; ty=ch/2-ny*scale; applyT();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS / HELPERS
+═══════════════════════════════════════════════════════════════ */
+function setStatus(state,msg,right){
+  document.getElementById('sbar-dot').className=state?`${state}`:'';
+  document.getElementById('sbar-msg').textContent=msg;
+  document.getElementById('sbar-right').textContent=right||'';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTEXT MENU
+═══════════════════════════════════════════════════════════════ */
+let ctxSlug = null;
+
+function showCtxMenu(e, slug) {
+  e.preventDefault();
+  e.stopPropagation();
+  cancelHoverCard();
+  ctxSlug = slug;
+  const menu = document.getElementById('ctx-menu');
+  const isDone = done.has(slug);
+  const isTracking = tracking.has(slug);
+  const isAlreadyReady = (Q[slug]?.previous || []).every(p => done.has(p));
+  document.getElementById('ctx-label').textContent = isDone ? 'Mark as not done' : 'Mark as done';
+  document.getElementById('ctx-toggle').style.color = isDone ? 'var(--t2)' : 'var(--path)';
+  document.getElementById('ctx-track-label').textContent = isTracking ? 'Stop tracking' : 'Track quest';
+  document.getElementById('ctx-track').style.color = isTracking ? 'var(--t2)' : 'var(--track)';
+  // Hide "mark ready" if already naturally unlocked or already done
+  document.getElementById('ctx-ready').style.display = (isAlreadyReady || isDone) ? 'none' : '';
+  menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
+  menu.style.top  = Math.min(e.clientY, window.innerHeight - 120) + 'px';
+  menu.classList.add('vis');
+}
+function ctxToggle() {
+  if (ctxSlug) toggleDone(ctxSlug);
+  document.getElementById('ctx-menu').classList.remove('vis');
+}
+function ctxTrack() {
+  if (ctxSlug) toggleTracking(ctxSlug);
+  document.getElementById('ctx-menu').classList.remove('vis');
+}
+function ctxMarkReady() {
+  if (ctxSlug) markReady(ctxSlug);
+  document.getElementById('ctx-menu').classList.remove('vis');
+}
+function ctxSelect() {
+  if (ctxSlug) selectQuest(ctxSlug);
+  document.getElementById('ctx-menu').classList.remove('vis');
+}
+function ctxDetails() {
+  if (ctxSlug) showQuestDetail(ctxSlug);
+  document.getElementById('ctx-menu').classList.remove('vis');
+}
+document.addEventListener('click', () => document.getElementById('ctx-menu').classList.remove('vis'));
+document.addEventListener('keydown', e => {
+  document.getElementById('ctx-menu').classList.remove('vis');
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('quest-detail-overlay').classList.contains('vis')) closeQuestDetail();
+    else if(document.getElementById('rewards-subcat-overlay').classList.contains('vis')) closeRewardsCategory(false);
+    else if(document.getElementById('rewards-overlay').classList.contains('vis')) closeRewards();
+    else clearPath();
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){ e.preventDefault(); document.getElementById('inp-search').focus(); }
+});
+
+// Boot
+autoLoad();
+</script>
+</body>
+</html>
