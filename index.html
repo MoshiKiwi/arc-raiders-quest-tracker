@@ -741,26 +741,38 @@ function loadDone() {
   } catch { objectiveProgress = {}; }
 }
 
-// quests.json previously had case-variant duplicate slugs for a few quests
-// (e.g. Eyes_In_The_Sky vs Eyes_in_the_Sky — same wiki page, different link
-// casing) that got merged into one canonical slug. Anyone who had tracked or
-// completed one of those under the old casing has a stale slug sitting in
-// localStorage that no longer matches any key in Q, so it silently never
-// renders as highlighted again until re-toggled. Remap it once Q is loaded.
-const SLUG_MIGRATIONS = {
-  'Eyes_In_The_Sky': 'Eyes_in_the_Sky',
-  'A_Symbol_Of_Unification': 'A_Symbol_of_Unification',
-  'Reduced_To_Rubble': 'Reduced_to_Rubble',
-  'Out_Of_The_Shadows': 'Out_of_the_Shadows',
-};
+// The wiki occasionally renames a page's canonical slug by just a casing
+// tweak (e.g. Eyes_In_The_Sky → Eyes_in_the_Sky, or a re-scrape days later
+// picking up Keeping_An_Eye_Out → Keeping_an_Eye_Out because someone fixed
+// the page title upstream). Since the daily scraper workflow can surface a
+// fresh rename like this at any time, this can't be a fixed list of known
+// pairs — it has to check live, every load, against whatever Q currently
+// contains. Anything in done/tracking/objectiveProgress that doesn't match
+// a current key gets remapped to whichever key matches case-insensitively.
 function migrateStaleSlugs() {
+  const lowerToCanonical = {};
+  Object.keys(Q).forEach(k => { lowerToCanonical[k.toLowerCase()] = k; });
+
   let changed = false;
   [done, tracking].forEach(set => {
-    Object.entries(SLUG_MIGRATIONS).forEach(([oldSlug, newSlug]) => {
-      if (set.has(oldSlug)) { set.delete(oldSlug); set.add(newSlug); changed = true; }
+    [...set].forEach(slug => {
+      if (Q[slug]) return;
+      const canonical = lowerToCanonical[slug.toLowerCase()];
+      if (canonical && canonical !== slug) { set.delete(slug); set.add(canonical); changed = true; }
     });
   });
-  if (changed) saveDone();
+
+  Object.keys(objectiveProgress).forEach(slug => {
+    if (Q[slug]) return;
+    const canonical = lowerToCanonical[slug.toLowerCase()];
+    if (canonical && canonical !== slug) {
+      objectiveProgress[canonical] = objectiveProgress[slug];
+      delete objectiveProgress[slug];
+      changed = true;
+    }
+  });
+
+  if (changed) { saveDone(); saveObjectiveProgress(); }
 }
 function saveDone() {
   localStorage.setItem('arc-done', JSON.stringify([...done]));
