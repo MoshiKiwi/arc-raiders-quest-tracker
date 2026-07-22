@@ -131,6 +131,19 @@ function parseQuest(html, slug) {
     return /<div class="quest-label quest-label-bold">\s*IN ONE ROUND\s*<\/div>/i.test(section);
   }
 
+  // Dialog: <h2 id="Dialog">Dialog</h2></div><section ...>
+  //   <p><b>Introduction:</b></p><blockquote><p>TEXT</p>...</blockquote>
+  //   ...other stages (Upon Acceptance, Idle, Upon Entering Raid, Upon Completion) follow —
+  //   only "Introduction" (the trader's opening line) is captured for the tooltip.
+  function extractIntroDialogue() {
+    const secM = html.match(/id="Dialog">Dialog<\/h2><\/div><section[^>]*>([\s\S]*?)<\/section>/);
+    if (!secM) return '';
+    // Label is usually "Introduction:" but some pages use "Introduction" (no colon) or "Intro:"
+    const introM = secM[1].match(/<b>(?:Introduction|Intro):?<\/b>\s*<\/p>\s*<blockquote>([\s\S]*?)<\/blockquote>/);
+    if (!introM) return '';
+    return introM[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
   // Previous: <th scope="row">Previous</th><td>...</td>
   // Next:     <th scope="row">Next</th><td>...</td>
   function extractLinks(label) {
@@ -179,6 +192,7 @@ function parseQuest(html, slug) {
     location:     extractLocation(),
     objectives:   extractObjectives(),
     inOneRound:   extractInOneRound(),
+    dialogue:     extractIntroDialogue(),
     previous:     extractLinks('Previous'),
     next:         extractLinks('Next'),
     rewards:      extractItemList('Rewards'),

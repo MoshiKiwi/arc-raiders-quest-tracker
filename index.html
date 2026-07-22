@@ -107,7 +107,7 @@ body { background: var(--bg); color: var(--t); font-family: 'Inter', sans-serif;
 
 /* ── Canvas ─────────────────────────────────────────────────────────── */
 #canvas-wrap { flex: 1; overflow: hidden; position: relative; cursor: grab;
-  background: var(--bg);
+  background: var(--bg); touch-action: none;
   background-image: radial-gradient(circle, var(--b) 1px, transparent 1px);
   background-size: 28px 28px; }
 #canvas-wrap.grabbing { cursor: grabbing; }
@@ -184,7 +184,7 @@ svg#tree { display: block; }
 #aqw-head h2 { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
   letter-spacing: .02em; color: var(--t); text-transform: uppercase; }
 #aqw-sub { font-size: 10.5px; color: var(--t3); }
-#aqw-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 14px; }
+#aqw-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 14px; touch-action: pan-y; }
 #aqw-body::-webkit-scrollbar { width: 4px; }
 #aqw-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
 .aqw-empty { font-size: 12px; color: var(--t3); text-align: center; padding: 30px 10px; line-height: 1.6; }
@@ -200,10 +200,17 @@ svg#tree { display: block; }
 .aqw-done-msg { font-size: 12px; color: var(--path); font-weight: 600; }
 .aqw-obj-list { list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
 .aqw-obj-item { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--t2);
-  cursor: pointer; }
+  cursor: pointer; position: relative; }
 /* Custom checkbox: the native input is visually hidden but still focusable/
-   accessible; a sibling span is what actually renders the box + checkmark. */
-.aqw-obj-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+   accessible; a sibling span is what actually renders the box + checkmark.
+   Anchored (top/left:0) to this label specifically — without a positioned
+   ancestor of its own, the checkbox's containing block would be whichever
+   positioned element is nearest up the tree (here, an absolutely-positioned,
+   transformed widget several levels up, past a scrolled list in between).
+   That mismatch is what let a scrolled list + a checkbox click confuse the
+   browser's focus-scroll into shifting the *widget's* transform instead of
+   just the list, sliding the whole panel off screen. */
+.aqw-obj-item input[type="checkbox"] { position: absolute; top: 0; left: 0; opacity: 0; width: 0; height: 0; }
 .aqw-cb-box { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; position: relative;
   border: 1.5px solid var(--b3); border-radius: 3px; background: var(--bg3);
   transition: all .15s ease; }
@@ -264,7 +271,7 @@ svg#tree { display: block; }
 #mqw-head h2 { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
   letter-spacing: .02em; color: var(--t); text-transform: uppercase; }
 #mqw-sub { font-size: 10.5px; color: var(--t3); }
-#mqw-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 14px; }
+#mqw-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 14px; touch-action: pan-y; }
 #mqw-body::-webkit-scrollbar { width: 4px; }
 #mqw-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
 /* Step 1: pick a map */
@@ -468,6 +475,14 @@ svg#tree { display: block; }
 .qd-pill-oneround, .qhc-pill-oneround { color: #f0a860 !important; background: rgba(240,160,64,.14) !important;
   border-color: rgba(240,160,64,.4) !important; }
 .qhc-pill-frame-oneround { background: rgba(240,160,64,.5) !important; }
+/* Trader's opening line, quoted verbatim from the wiki — sits between the
+   meta pills and the mechanical sections (Objectives/Rewards) so it reads
+   as flavor first, mechanics second. Hidden entirely when a quest has none. */
+.quest-quote { margin: 9px 16px 0; padding: 8px 10px; font-size: 12px; line-height: 1.5;
+  font-style: italic; color: var(--t2); background: rgba(255,255,255,.03);
+  border-left: 2px solid var(--acc); border-radius: 0 4px 4px 0; }
+.quest-quote:empty { display: none; }
+#qhc-inner .quest-quote { margin: 0 0 11px; }
 #qd-body { flex: 1; overflow-y: auto; padding: 4px 0 12px; }
 #qd-body::-webkit-scrollbar { width: 4px; }
 #qd-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
@@ -549,35 +564,52 @@ svg#tree { display: block; }
 .reward-src .rs-track:disabled { cursor: default; opacity: .6; }
 #rewards-empty { padding: 30px 16px; text-align: center; font-size: 12px; color: var(--t3); }
 
-/* ── Phone layout ──────────────────────────────────────────────────────
-   The three-pane desktop layout (sidebar | canvas | active-panel side by
-   side) doesn't fit a phone screen at all — below this width they stack
-   vertically instead, each getting a bounded, scrollable strip, with the
-   canvas keeping the majority of the height since it's the actual tool. ── */
+/* ── Mobile tab bar ───────────────────────────────────────────────────
+   Hidden entirely on desktop. On phones it replaces the three-pane layout:
+   only one of Tree / Quests / Available fills #main at a time, picked here,
+   so #canvas-wrap (and everything anchored to it — zoom controls, the two
+   pull-tab widgets, the guide panel) stays a fixed, non-scrolling box at all
+   times instead of being a child of a scrolled page — the earlier bug where
+   a scrolled ancestor sent an absolutely-positioned widget off screen can't
+   happen if that ancestor never scrolls in the first place. ── */
+#mobile-tabbar { display: none; flex-shrink: 0; background: var(--bg2); border-top: 1px solid var(--b); }
+.mtab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; padding: 7px 4px 8px; background: none; border: none; color: var(--t3);
+  font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500; cursor: pointer; }
+.mtab svg { width: 19px; height: 19px; }
+.mtab.active { color: var(--t); }
+.mtab.active svg { color: var(--hi); }
+
 @media (max-width: 720px) {
   #topbar { padding: 8px 10px; gap: 8px; }
-  #search-wrap { min-width: 120px; }
-  .btn { padding: 6px 9px; font-size: 11px; }
+  #search-wrap { min-width: 0; flex: 1 1 100%; order: 3; max-width: 100%; }
+  .btn { padding: 8px 10px; font-size: 11px; min-height: 36px; }
 
-  #main { flex-direction: column; overflow-y: auto; }
-  #sidebar, #active-panel {
-    width: 100%; max-width: 100%; flex-shrink: 0;
-    max-height: 26vh; border: none; border-bottom: 1px solid var(--b);
-  }
-  #canvas-wrap { min-height: 45vh; }
+  /* Only the pane matching the active mobile tab is shown; each takes the
+     full pane, same as its desktop sizing rules otherwise. */
+  #sidebar, #active-panel, #canvas-wrap { display: none; }
+  #main { overflow: hidden; }
+  body[data-mpane="tree"]      #canvas-wrap  { display: flex; }
+  body[data-mpane="quests"]    #sidebar      { display: flex; }
+  body[data-mpane="available"] #active-panel { display: flex; }
+  #sidebar, #active-panel { width: 100%; max-width: 100%; max-height: none; border: none; }
 
-  /* The pull-tab widgets already scale via min(Npx, vw); just shrink the
-     tabs themselves a bit so two stacked corners don't eat the screen. */
-  #aqw-toggle, #mqw-toggle { width: 26px; height: 100px; }
-  #aqw-panel, #mqw-panel { max-height: 46vh; }
+  #mobile-tabbar { display: flex; }
 
-  #guide-panel { top: 8px; padding: 12px 14px; max-height: 50vh; }
+  /* Bigger touch targets throughout — the desktop sizes assume a mouse. */
+  .zoom-btn { width: 40px; height: 40px; font-size: 19px; }
+  #zoom-btns { bottom: 10px; right: 10px; }
+  #aqw-toggle, #mqw-toggle { width: 34px; height: 110px; }
+  #aqw-panel, #mqw-panel { max-height: 70vh; }
+  .ctx-item { padding: 11px 16px; font-size: 14px; }
+  .aqw-cb-box { width: 20px; height: 20px; }
+
+  #guide-panel { top: 8px; padding: 12px 14px; max-height: 50vh; width: min(380px, 94vw); }
 
   #rewards-cat-grid, .mqw-map-btn-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 420px) {
-  #search-wrap { display: none; } /* the sidebar + widgets already cover "find a quest" on the smallest screens */
   #rewards-cat-grid, .mqw-map-btn-grid { grid-template-columns: 1fr; }
 }
 </style>
@@ -707,6 +739,23 @@ svg#tree { display: block; }
   </div>
 </div>
 
+<!-- Mobile-only tab bar: switches which of the three panes above fills
+     #main, since side-by-side no longer fits. Hidden entirely on desktop. -->
+<div id="mobile-tabbar">
+  <button class="mtab active" data-pane="tree" onclick="setMobilePane('tree')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="6" height="4" rx="1"/><rect x="9" y="2" width="6" height="4" rx="1"/><rect x="5" y="10" width="6" height="4" rx="1"/><path d="M4 6v2a2 2 0 002 2M12 6v2a2 2 0 01-2 2"/></svg>
+    Tree
+  </button>
+  <button class="mtab" data-pane="quests" onclick="setMobilePane('quests')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h10v12H3z"/><path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3"/></svg>
+    Quests
+  </button>
+  <button class="mtab" data-pane="available" onclick="setMobilePane('available')">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.3 8s2.3-4.7 6.7-4.7S14.7 8 14.7 8s-2.3 4.7-6.7 4.7S1.3 8 1.3 8z"/><circle cx="8" cy="8" r="2.2"/></svg>
+    Available
+  </button>
+</div>
+
 <!-- Right-click context menu -->
 <div id="ctx-menu">
   <div class="ctx-item" id="ctx-toggle" onclick="ctxToggle()">
@@ -773,6 +822,7 @@ svg#tree { display: block; }
       </div>
     </div>
     <div id="qd-body">
+      <p id="qd-dialogue" class="quest-quote"></p>
       <div class="qd-section">
         <h3>Objectives</h3>
         <ul id="qd-objectives" class="aqw-obj-list"></ul>
@@ -818,6 +868,7 @@ svg#tree { display: block; }
         <span id="qhc-location" class="loc-pill-wrap"></span>
         <span id="qhc-oneround" class="qhc-pill-frame qhc-pill-frame-oneround" style="display:none"><span class="qhc-pill qhc-pill-oneround">⏱ In one round</span></span>
       </div>
+      <p id="qhc-dialogue" class="quest-quote"></p>
       <div class="qhc-section">
         <h4>Objectives</h4>
         <ul id="qhc-objectives" class="aqw-obj-list"></ul>
@@ -841,13 +892,12 @@ svg#tree { display: block; }
    automatically on load; anyone can reopen it via the What's New button.
 ═══════════════════════════════════════════════════════════════ */
 const CHANGELOG = {
-  version: '1.0',
+  version: '1.1',
   items: [
-    'Reward tooltips now show real in-game icons for items and traders',
-    'Added the Active Quest widget — pulls out what to do next for anything you\'re tracking, with its own checklist',
-    'Added the Quests by Map widget — pick a map, see everything available there right now',
-    'Quest checklists now sync live across every panel that shows them',
-    'Added a Guide button with a practice quest tree for learning the interface',
+    'Quest tooltips and details now show what the trader actually says when offering the quest, in their own words',
+    'Fixed the "Available now" counter including tracked-but-locked quests it shouldn\'t have',
+    'Fixed a scroll bug in the Quests by Map widget that could send the whole panel sliding off screen',
+    'Added a real mobile layout — tab-based navigation, touch pan/pinch-zoom on the tree, and long-press for the right-click menu',
   ],
 };
 
@@ -1283,8 +1333,9 @@ function renderPathItems(container, path, targetSlug) {
       <span class="sq-title" style="flex:1;${isDone&&!isCurrent?'text-decoration:line-through;color:var(--t3)':''}">${q?.title || s.replace(/_/g,' ')}</span>
       <span class="sq-badge" style="font-size:${isCurrent?'10px':'12px'};color:${isCurrent?'var(--hi)':isDone?'var(--path)':'var(--track)'};font-weight:${isCurrent?'600':'400'}">${isCurrent?'TARGET':isDone?'✓':isTracking?eyeSVG:''}</span>
     `;
-    el.onclick = () => { if (!isCurrent) selectQuest(s); };
+    el.onclick = () => { if (!isCurrent) { selectQuest(s); setMobilePane('tree'); } };
     el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, s); };
+    attachLongPress(el, s);
     el.onmouseenter = e => scheduleHoverCard(e, s);
     el.onmouseleave = () => cancelHoverCard();
     container.appendChild(el);
@@ -1959,6 +2010,7 @@ function renderTree(srch) {
       : '';
 
     s += `<g class="qn" id="${guideNodeElId(n)}" onclick="selectQuest('${esc}')" oncontextmenu="showCtxMenu(event,'${esc}')"
+  ontouchstart="lpStart(event,'${esc}')" ontouchmove="lpMove(event)" ontouchend="lpEnd(event)" ontouchcancel="lpCancel()"
   onmouseenter="scheduleHoverCard(event,'${esc}')" onmouseleave="cancelHoverCard()">
 <rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="4"
   fill="${fillColor}" fill-opacity="${fillOpacity}"
@@ -2012,8 +2064,9 @@ function renderList(srch) {
       <span style="flex:1;${isDone?'text-decoration:line-through;color:var(--t3)':''}">${q.title}</span>
       ${isDone ? '<span style="font-size:11px;color:var(--path)">✓</span>' : (prereqs>0 ? `<span class="sq-depth">${prereqs} req</span>` : '')}
     `;
-    el.onclick = () => selectQuest(slug);
+    el.onclick = () => { selectQuest(slug); setMobilePane('tree'); };
     el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, slug); };
+    attachLongPress(el, slug);
     el.onmouseenter = e => scheduleHoverCard(e, slug);
     el.onmouseleave = () => cancelHoverCard();
     sidebar.appendChild(el);
@@ -2040,8 +2093,7 @@ function renderActive() {
   const active = getActive();
   const tracked = [...tracking].filter(s => Q[s] && !done.has(s));
   const body = document.getElementById('active-body');
-  const total = new Set([...active, ...tracked]).size;
-  document.getElementById('active-count').textContent = total;
+  document.getElementById('active-count').textContent = active.length;
 
   if (!Object.keys(Q).length) {
     body.innerHTML = '<div id="active-empty">Load quests to see what\'s available</div>';
@@ -2062,8 +2114,9 @@ function renderActive() {
       el.className = 'active-item' + (slug === selectedSlug ? ' focused' : '');
       el.style.cssText = 'color:#a8d4f8;border-left-color:var(--track);background:rgba(96,160,224,.08)';
       el.innerHTML = `<span style="display:inline-flex;align-items:center;margin-right:4px"><svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 16 16"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg></span><span style="flex:1">${q.title}</span>`;
-      el.onclick = () => selectQuest(slug);
+      el.onclick = () => { selectQuest(slug); setMobilePane('tree'); };
       el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, slug); };
+      attachLongPress(el, slug);
       el.onmouseenter = e => scheduleHoverCard(e, slug);
       el.onmouseleave = () => cancelHoverCard();
       body.appendChild(el);
@@ -2087,8 +2140,9 @@ function renderActive() {
       const el = document.createElement('div');
       el.className = 'active-item' + (slug === selectedSlug ? ' focused' : '');
       el.innerHTML = `<span style="flex:1">${q.title}</span>`;
-      el.onclick = () => selectQuest(slug);
+      el.onclick = () => { selectQuest(slug); setMobilePane('tree'); };
       el.oncontextmenu = e => { e.preventDefault(); showCtxMenu(e, slug); };
+      attachLongPress(el, slug);
       el.onmouseenter = e => scheduleHoverCard(e, slug);
       el.onmouseleave = () => cancelHoverCard();
       body.appendChild(el);
@@ -2354,6 +2408,7 @@ let realScale = 1, realTx = 0, realTy = 0;
 
 function startGuide() {
   if (guideActive) return;
+  setMobilePane('tree'); // the guide lives on the canvas — make sure it's the visible pane on mobile
 
   realQ = Q;
   realDone = new Set(done);
@@ -2507,6 +2562,9 @@ function populateQuestInfoInto(prefix, slug) {
   const oneRoundEl = document.getElementById(`${prefix}-oneround`);
   if (oneRoundEl) oneRoundEl.style.display = q.inOneRound ? '' : 'none';
 
+  const dialogueEl = document.getElementById(`${prefix}-dialogue`);
+  if (dialogueEl) dialogueEl.textContent = q.dialogue ? `“${q.dialogue}”` : '';
+
   populateObjectiveChecklist(document.getElementById(`${prefix}-objectives`), slug, q.objectives || []);
 
   const granted = q.grantedItems || [];
@@ -2530,6 +2588,11 @@ const HOVER_DELAY_MS = 250;
 let hoverTimer = null;
 
 function scheduleHoverCard(e, slug) {
+  // Touch has no real hover — some browsers still fire a synthetic
+  // mouseenter after a tap, which would otherwise pop the card up with no
+  // matching mouseleave to dismiss it. Long-press (see attachLongPress)
+  // opens the same info via the context menu's "Quest details" instead.
+  if (window.matchMedia('(hover: none)').matches) return;
   cancelHoverCard();
   const target = e.currentTarget;
   hoverTimer = setTimeout(() => showHoverCard(target, slug), HOVER_DELAY_MS);
@@ -2610,6 +2673,67 @@ window.addEventListener('mouseup',()=>{
   dragging=false; canvasEl.classList.remove('grabbing'); wrapEl.classList.remove('dragging');
 });
 
+// ── Touch: one finger pans, two fingers pinch-zoom — same math as the mouse
+// drag / wheel handlers above, just fed from touches instead. `touchMode`
+// tracks which gesture is live so a move handler shared by both cases
+// doesn't have to re-derive it from touches.length alone (which flickers
+// for a frame when a finger lifts mid-gesture).
+let touchMode = null; // null | 'pan' | 'pinch'
+let tsx, tsy, ttx, tty;      // pan: touch start point + tx/ty at that point
+let lastPinchDist = 0;       // pinch: previous frame's finger distance, for incremental scaling like the wheel handler
+
+function touchDist(a, b) { return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY); }
+
+canvasEl.addEventListener('touchstart', e => {
+  if (e.target.closest('#active-quest-widget, #map-quest-widget')) return;
+  cancelHoverCard();
+  if (e.touches.length === 1) {
+    if (e.target.closest('.qn')) return; // let the node's own tap/long-press handle it
+    touchMode = 'pan';
+    tsx = e.touches[0].clientX; tsy = e.touches[0].clientY; ttx = tx; tty = ty;
+    wrapEl.classList.add('dragging');
+  } else if (e.touches.length === 2) {
+    e.preventDefault();
+    touchMode = 'pinch';
+    lastPinchDist = touchDist(e.touches[0], e.touches[1]);
+    wrapEl.classList.add('dragging');
+  }
+}, {passive:false});
+
+canvasEl.addEventListener('touchmove', e => {
+  if (touchMode === 'pan' && e.touches.length === 1) {
+    e.preventDefault();
+    tx = ttx + (e.touches[0].clientX - tsx); ty = tty + (e.touches[0].clientY - tsy);
+    applyT();
+  } else if (touchMode === 'pinch' && e.touches.length === 2) {
+    e.preventDefault();
+    const r = canvasEl.getBoundingClientRect();
+    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
+    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+    const newDist = touchDist(e.touches[0], e.touches[1]);
+    const d = newDist / lastPinchDist;
+    tx = mx - (mx - tx) * d; ty = my - (my - ty) * d;
+    scale = Math.max(.08, Math.min(4, scale * d));
+    applyT();
+    lastPinchDist = newDist;
+  }
+}, {passive:false});
+
+function touchGestureEnd(e) {
+  if (e.touches.length === 0) {
+    if (touchMode) saveView();
+    touchMode = null;
+    wrapEl.classList.remove('dragging');
+  } else if (e.touches.length === 1) {
+    // Dropped from a pinch (or a stray extra finger) to a single finger —
+    // re-baseline as a fresh pan from here instead of jumping.
+    touchMode = 'pan';
+    tsx = e.touches[0].clientX; tsy = e.touches[0].clientY; ttx = tx; tty = ty;
+  }
+}
+canvasEl.addEventListener('touchend', touchGestureEnd);
+canvasEl.addEventListener('touchcancel', () => { touchMode = null; wrapEl.classList.remove('dragging'); });
+
 function zoom(f){
   const r=canvasEl.getBoundingClientRect();
   const cx=r.width/2,cy=r.height/2;
@@ -2627,6 +2751,21 @@ function fitView(){
   saveView();
 }
 function resetZoom(){ scale=1; tx=20; ty=20; applyT(); saveView(); }
+
+// ── Mobile tab bar: picks which of sidebar / canvas / active-panel fills
+// #main (only relevant under the phone-width media query — harmless no-op
+// state otherwise). Deliberately never touches scale/tx/ty: canvas-wrap
+// stays mounted and correctly sized whenever it's the visible pane, so the
+// transform set by fitView()/applyT() earlier remains valid when switching
+// back to it, with no need to re-fit on every tab switch.
+let mobilePane = 'tree';
+function setMobilePane(pane) {
+  mobilePane = pane;
+  document.body.dataset.mpane = pane;
+  document.querySelectorAll('#mobile-tabbar .mtab').forEach(b => {
+    b.classList.toggle('active', b.dataset.pane === pane);
+  });
+}
 
 function scrollToNode(slug){
   // Pan so the selected node is visible
@@ -2660,6 +2799,41 @@ function setStatus(state,msg,right){
 ═══════════════════════════════════════════════════════════════ */
 let ctxSlug = null;
 
+// ── Long-press: touch's equivalent of right-click ──────────────────────
+// There's no right-click gesture on a touchscreen, so the context menu
+// (mark done, track, quest details, ...) would otherwise be unreachable
+// there. attachLongPress wires a ~500ms press-and-hold, on any element that
+// already has a right-click handler, to open the exact same menu.
+let lpTimer = null, lpSX = 0, lpSY = 0, lpFired = false;
+function lpStart(e, slug) {
+  const t = e.touches ? e.touches[0] : e;
+  lpSX = t.clientX; lpSY = t.clientY; lpFired = false;
+  clearTimeout(lpTimer);
+  lpTimer = setTimeout(() => {
+    lpFired = true;
+    if (navigator.vibrate) navigator.vibrate(10);
+    showCtxMenu({ clientX: lpSX, clientY: lpSY, preventDefault(){}, stopPropagation(){} }, slug);
+  }, 500);
+}
+function lpMove(e) {
+  if (!lpTimer) return;
+  const t = e.touches ? e.touches[0] : e;
+  if (Math.hypot(t.clientX - lpSX, t.clientY - lpSY) > 10) lpCancel();
+}
+function lpCancel() { clearTimeout(lpTimer); lpTimer = null; }
+function lpEnd(e) {
+  const fired = lpFired;
+  lpCancel();
+  lpFired = false;
+  if (fired) e.preventDefault(); // swallow the tap-to-select that'd otherwise follow
+}
+function attachLongPress(el, slug) {
+  el.addEventListener('touchstart', e => lpStart(e, slug), {passive:true});
+  el.addEventListener('touchmove', lpMove, {passive:true});
+  el.addEventListener('touchend', lpEnd);
+  el.addEventListener('touchcancel', lpCancel);
+}
+
 function showCtxMenu(e, slug) {
   e.preventDefault();
   e.stopPropagation();
@@ -2676,8 +2850,16 @@ function showCtxMenu(e, slug) {
   // Hide "mark ready" if already naturally unlocked or already done
   document.getElementById('ctx-ready').style.display = (isAlreadyReady || isDone) ? 'none' : '';
   menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
-  menu.style.top  = Math.min(e.clientY, window.innerHeight - 120) + 'px';
+  menu.style.top  = e.clientY + 'px';
   menu.classList.add('vis');
+  // Clamp against the menu's *actual* rendered height rather than a fixed
+  // guess — item height (and so total height) changes between desktop and
+  // the enlarged mobile touch-target size, and a long-press can land much
+  // closer to the bottom edge than a desktop right-click typically does.
+  const menuH = menu.getBoundingClientRect().height;
+  if (e.clientY + menuH > window.innerHeight) {
+    menu.style.top = Math.max(4, window.innerHeight - menuH - 4) + 'px';
+  }
 }
 function ctxToggle() {
   if (ctxSlug) toggleDone(ctxSlug);
@@ -2692,7 +2874,7 @@ function ctxMarkReady() {
   document.getElementById('ctx-menu').classList.remove('vis');
 }
 function ctxSelect() {
-  if (ctxSlug) selectQuest(ctxSlug);
+  if (ctxSlug) { selectQuest(ctxSlug); setMobilePane('tree'); }
   document.getElementById('ctx-menu').classList.remove('vis');
 }
 function ctxDetails() {
@@ -2718,6 +2900,7 @@ document.addEventListener('keydown',e=>{
 });
 
 // Boot
+setMobilePane('tree');
 autoLoad();
 </script>
 </body>

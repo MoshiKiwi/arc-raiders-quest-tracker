@@ -16,6 +16,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "The storm has mostly settled, but much of our infrastructure has taken a proper beating. If you're hoping to stay with us, I'll need you to pull your weight in the repair efforts.",
     "previous": [],
     "next": [
       "Clearer_Skies",
@@ -52,6 +53,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "There's no such thing as junk, to a Raider; just valuable materials waiting to be recycled. If you're going to amount to anything around here, you can't just wait for things to be served on a silver platter.",
     "previous": [
       "Picking_Up_The_Pieces"
     ],
@@ -95,6 +97,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "A swarm of disoriented Wasps crashed near one of our skylights. I need you to help thin ARC's ranks before any more accidents happen, and gather some extra sturdy materials to fix the damage.",
     "previous": [
       "Picking_Up_The_Pieces"
     ],
@@ -137,6 +140,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "The damage down here was pretty bad, but our Topside infrastructure was hit even harder. I still have several antennas that stopped working after the storm.",
     "previous": [
       "Clearer_Skies",
       "Trash_Into_Treasure"
@@ -174,6 +178,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Even the slightest change to ARC's behavior could spell disaster. And that signal you heard? It's like nothing we've ever picked up. If they're up to something, we need to find out whatever we can.",
     "previous": [
       "Off_The_Radar"
     ],
@@ -219,6 +224,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Our scouts have reported several Raider Hatches with leaking hydraulic pipes. They still work, but not for long. Mind patching one up, next time you're out there?",
     "previous": [
       "A_Bad_Feeling"
     ],
@@ -260,6 +266,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "You're one of the new arrivals, right? I need a volunteer to test out this upgraded Ferro; should cut through ARC plating like butter. Go put holes in some machines, and report back to me.",
     "previous": [
       "A_Bad_Feeling"
     ],
@@ -317,6 +324,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Raiders have long reported peculiar-looking crates dropping down from malfunctioning ARC Probes . If we can figure out a way to crack them open, we might get a better understanding of what it is they're after.",
     "previous": [
       "Hatch_Repairs"
     ],
@@ -363,6 +371,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We're short on everything but mouths to feed, yet Celeste's launching precious supplies into the air for Raiders to claw over. I'm done letting the good stuff go to waste.",
     "previous": [
       "The_Right_Tool"
     ],
@@ -421,6 +430,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Intel's all well and good, but only gets us so far. If ARC's truly closing in, I need every Raider to prove they can handle their drones in a fight.",
     "previous": [
       "Down_To_Earth"
     ],
@@ -481,6 +491,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Recently, I've been trying and failing to get Tian Wen to join our community projects. So [ 1 ] , I may have to sweeten the deal. She's been complaining about the quality of salvage found on the market; think we could do her a solid?",
     "previous": [
       "A_Better_Use"
     ],
@@ -528,6 +539,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "During the First Wave the Barons did more damage than all the other machines combined. Now they're mere husks; fixed in place where they once fell... Still, their internals might hold the answer to keeping ARC at bay. So open one up, and bring me whatever is inside.",
     "previous": [
       "Greasing_Her_Palms",
       "The_Trifecta"
@@ -574,6 +586,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Celeste told me you're the one who helped her hound me about pitching in more. I'll say this once: I don't appreciate the meddling, and I have my own reasons for refusing. I do however, appreciate the scrap. Since you're apparently good at tracking it down, I may have a task for you.",
     "previous": [
       "Dormant_Barons"
     ],
@@ -624,6 +637,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Say, newbie: if you want me to treat you, you better prove that those precious limbs of yours are worth bandaging.",
     "previous": [
       "Greasing_Her_Palms"
     ],
@@ -686,6 +700,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I have another special site I need you to search for me. An old battlegrounds, from the First Wave. Raiders nowadays usually pick places like that clean, despite the significance they once held. People forget quickly. Quicker than they should.",
     "previous": [
       "What_We_Left_Behind"
     ],
@@ -735,6 +750,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I've become quite craft at weaving bandages from Fabric, but to my shame, I haven't quite mastered weaving an x-ray machine or a pulse oximiter.",
     "previous": [
       "Doctor's_Orders"
     ],
@@ -781,6 +797,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Someone has been lifting supplies from my drop-off point in Buried City. I've set up a trap, but I need someone to check it for me.",
     "previous": [
       "Broken_Monument"
     ],
@@ -834,6 +851,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Back during the First Wave, my squad and I built a trap out by the Dam. We [ 1 ] overloaded a generator, turned it into a makeshift ARC trap. Now I hear Raiders are using it to cut comms and spring ambushes on each other. I need you to end it.",
     "previous": [
       "Broken_Monument"
     ],
@@ -871,6 +889,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I got my hands on a fancy new ESR Analyzer; had a whole big reveal planned. One minute it's here, next minute—poof. Please help?",
     "previous": [
       "Medical_Merchandise"
     ],
@@ -908,6 +927,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "That theft before? Doesn't look like a coincidence anymore. Some of the competition from Toledo is setting up shop where they don't belong. I want their cache sabotaged, preferably before they get too comfortable.",
     "previous": [
       "Marked_For_Death"
     ],
@@ -954,6 +974,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Look, I lost my cool a bit when I sent you after that trap. I don't usually lose my temper, but the First Wave... We went through a lot, back then. Lost a lot of people. It's still a bit of a raw wound for me, but I want you to understand.",
     "previous": [
       "Straight_Record"
     ],
@@ -1004,6 +1025,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Those distant rumbles are getting less distant with each passing day. I have a lead on some LiDAR scanners that may help us monitor the tremors. You do want to keep a roof over your head, don't you?",
     "previous": [
       "A_Reveal_In_Ruins"
     ],
@@ -1046,6 +1068,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Everything's been calm around my drop-offs since you helped out, but that doesn't mean it'll stay that way for long. I've set up surveillance at one of my most used spots in Buried City, to prevent future tampering. Only problem is, it needs power to go live.",
     "previous": [
       "Market_Correction"
     ],
@@ -1087,6 +1110,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Did you feel any tremors last night? Me neither. But apparently the ground shifted at some point, and in the process it unearthed an old First Wave outpost that'd been blocked by debris. I'd like you to get in there quick, before anyone else does.",
     "previous": [
       "Keeping_The_Memory"
     ],
@@ -1135,6 +1159,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Those LiDAR scanners you found work best when put in high locations. I've identified a few good spots around the Rust Belt; hope you're surefooted.",
     "previous": [
       "A_Lay_Of_The_Land"
     ],
@@ -1189,6 +1214,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "With my own stashes secured, I think it might be time to keep a closer eye on the competition so this doesn't happen again.",
     "previous": [
       "Eyes_On_The_Prize"
     ],
@@ -1235,6 +1261,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Our food production is finally enough to meet our basic needs, but what we really need now is variety. I have a lead on some agricultural research from before the First Wave. Are you in?",
     "previous": [
       "Eyes_in_the_Sky"
     ],
@@ -1293,6 +1320,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I'm setting up a greenhouse, to help boost our food production. I'm doing Celeste a solid, alright? That's all. But enough about that. I've got all the details worked out, but I'll need supplies, and I'm not hauling them alone.",
     "previous": [
       "Echoes_Of_Victory_Ridge",
       "Industrial_Espionage"
@@ -1340,6 +1368,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "According to the files you found in the lab, the cultivation researchers were actually the ones who set up the hydroponic domes out in the swamp. Sounds like the most obvious place to search next, don't you think?",
     "previous": [
       "A_Balanced_Harvest"
     ],
@@ -1386,6 +1415,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Y'Know, back in the day we actually used to have a flag - well , a scrap of cloth more than anything. Still, seeing it meant you knew you had allies nearby, that you were on your own home turf. So, I was thinking...",
     "previous": [
       "Unexpected_Initiative"
     ],
@@ -1430,6 +1460,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I know, I know! The power's down in sector— Hey [ 1 ] . A flash flood took out some of our solar panels in Buried City, and the generators only hold on for so long. Do us all a solid when you're up there, OK?",
     "previous": [
       "Eyes_in_the_Sky"
     ],
@@ -1482,6 +1513,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "We're in luck. The notes you found last time [ 1 ] were written by the lead researcher. When the project went under, it seems she took some of the seed samples and sealed them away in a secure location.",
     "previous": [
       "Untended_Garden"
     ],
@@ -1519,6 +1551,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I have another job. It's.. about my mom [ 1 ] . Those First Wave sites I sent you to before? I actually hoped you'd find something of my mother's. She fought in the Raider resistance. It was a long shot; but now I've got an actual lead.",
     "previous": [
       "A_Symbol_of_Unification"
     ],
@@ -1555,6 +1588,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Okay, so this is awkward... I lost two of my journals during some outpost inspections last time I went topside. Could you head out there and try to find them back before someone else stumbles on them?",
     "previous": [
       "A_Symbol_of_Unification"
     ],
@@ -1601,6 +1635,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "If you're here to complain about the water, join the club. I've been fielding complaints all day. Something is definitely up with it, and I need some help to sort it out.",
     "previous": [
       "After_Rain_Comes",
       "The_Root_Of_The_Matter"
@@ -1656,6 +1691,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Guess what? Shani asked me to help out with something, and for once, I'm actually glad she did. We're setting up new outposts topside! Or, planning to, at least. Can you believe it?",
     "previous": [
       "Celeste's_Journals",
       "Eyes_in_the_Sky",
@@ -1704,6 +1740,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I'm not saying our water's been tampered with, but based on your samples, I can't rule out the possibility either. Would you return to the Dam and see what's wrong?",
     "previous": [
       "Water_Troubles"
     ],
@@ -1750,6 +1787,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "ARC may be changing, but we're finally changing with it. Let's finish up those outposts so we track them, flank them; smash them to bits. [ 1 ]",
     "previous": [
       "Back_on_Top"
     ],
@@ -1792,6 +1830,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "There is a reservoir beneath the Spaceport; if we manage to route that water here, that should buy us time to deal with the contamination.",
     "previous": [
       "Source_Of_The_Contamination"
     ],
@@ -1838,6 +1877,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I have equipment set up at the Spaceport, to monitor ARC's movements. My connection broke down just now, I need you to head to the Control Towers and help me retrieve my logs.",
     "previous": [
       "Our_Presence_up_There"
     ],
@@ -1878,6 +1918,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "A customer of mine saw a family taking cover in an old encampment in Buried City. I'll pay anyone who manages to find them and escort them back to safety.",
     "previous": [
       "Switching_The_Supply"
     ],
@@ -1937,6 +1978,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "We've been losing signals in some areas of Buried City - my guess is that our equipment is acting up. You're quite skilled with repairs, aren't you? Could you check it out?",
     "previous": [
       "Lost_In_Transmission"
     ],
@@ -1983,6 +2025,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I've been curious about the medical area in the Spaceport for a while now. Wanna do me a solid and see what records you can dig up from that place? [ 1 ]",
     "previous": [
       "A_Warm_Place_To_Rest"
     ],
@@ -2025,6 +2068,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "It used to be their world, up there. Nobody to challenge their claim. Yet here we are. More outposts. More intel. More firepower. If I didn't know better, I'd say we've got quite a bit of a fight left in us.",
     "previous": [
       "Communication_Hideout",
       "Water_Troubles"
@@ -2082,6 +2126,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "This goes beyond bad luck. Something—or someone—has knocked out some of our electrical substations. The engineer I sent out to fix it hasn't returned, so I need all available Raiders to look into it. That includes you.",
     "previous": [
       "Prescriptions_Of_The_Past"
     ],
@@ -2139,6 +2184,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "For an entire sector to collapse like that... No wonder people are scared. We need to reinforce beyond anything we've done before, and we can't do it alone.",
     "previous": [
       "Into_The_Fray"
     ],
@@ -2189,6 +2235,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "My usual engineer is still healing from his wounds, and has been loopy for days. We can't afford to be at half-grid until he heals; I need someone to pick up his wrench in the mean time.",
     "previous": [
       "Power_Out"
     ],
@@ -2235,6 +2282,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "If the data you found can keep the ceiling from collapsing, we have no time to spare. I know of a few magnetic decryptors around Acerra Spaceport, from back during the Exodus. They might still be working.",
     "previous": [
       "Paving_The_Way"
     ],
@@ -2272,6 +2320,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Bees! There are bees still around! While I'm no expert, our greenhouse crew desperately wants some.",
     "previous": [
       "Flickering_Threat"
     ],
@@ -2327,6 +2376,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Data or no data: we'll learn how to make this place earthquake-proof. With a research this in-depth, there's bound to be a paper trail somewhere.",
     "previous": [
       "Deciphering_The_Data"
     ],
@@ -2387,6 +2437,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I sent a scout team to the Spaceport a while ago. Routine work — cataloging security, see if there's anything we could re-purpose. But I've heard nothing for two days.",
     "previous": [
       "The_Trifecta"
     ],
@@ -2420,6 +2471,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "A Raider came into my shop earlier, to trade some grenades for a machine she found in Buried City. She said it makes coffee, but it seems to be missing a few parts. Up for a job?",
     "previous": [
       "Bees!"
     ],
@@ -2465,6 +2517,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I... I don't get it. One day they were trying to stave off the Collapse, and then, suddenly... Nothing. That earthquake-resistant housing project was shut down by a group called MANTIKOR. Think you could find out more?",
     "previous": [
       "Groundbreaking"
     ],
@@ -2515,6 +2568,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "This place could use a makeover, but I don't want it looking like your raggedy Raider Dens. See if you can find out how my fellow medical greats used to live.",
     "previous": [
       "Espresso"
     ],
@@ -2562,6 +2616,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Do you remember the information you dug up about Project Heartwood? I've been looking over it, and it all seems to lead back to Stella Montis. [ 1 ]",
     "previous": [
       "A_Dead_End",
       "Dust_On_The_Wires"
@@ -2596,6 +2651,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I heard rumors about some signal Shani picked up. ARC is constantly adapting, and I'm sure this won't be their last warning sign. Well, if it's an arms race they want, they can get one.",
     "previous": [
       "A_Bad_Feeling"
     ],
@@ -2650,6 +2706,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I just treated one of the first Raiders who visited Stella Montis, and she said that she saw... others. Androids, very much like me.",
     "previous": [
       "A_Bad_Feeling"
     ],
@@ -2683,6 +2740,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "So [ 1 ] , the Official Toledo Tubes Management is demanding one of our Power Rods for usage of \"their\" Slingshot tubes. Hey [ 2 ] , don't let the name fool you, they're in no way official; just thugs with lots of power. Could you help me with this?",
     "previous": [
       "Life_Of_A_Pharmacist"
     ],
@@ -2737,6 +2795,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I'm still sorting through the data you found in Stella Montis, but something's caught my eye. So, [ 1 ] I'd like you to look into it.",
     "previous": [
       "Fragmented_Logs"
     ],
@@ -2782,6 +2841,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "That downed machine... We weren't the ones who did that. We know that there are still stray survivors out there, but this? This goes far beyond a single person.",
     "previous": [
       "Reduced_to_Rubble"
     ],
@@ -2816,6 +2876,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We can't build ARC tech from scratch, but there's plenty I can tinker with [ 1 ] from the pieces you salvage. I'm currently trying to repurpose different ARC parts. Would you mind running an experiment for me?",
     "previous": [
       "Safe_Passage"
     ],
@@ -2864,6 +2925,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Reports about Stella Montis keep coming in, and it's unlike anything we've seen before. There may be records or relics from the past in there, and if so, I want them.",
     "previous": [
       "In_My_Image"
     ],
@@ -2901,6 +2963,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We caught a break. One of our scouts saw a member of the Tubes Management make a dead drop inside the Santa Maria Houses in Buried City. Now [ 1 ] this might be our chance to dig up some dirt on them for a change. You in?",
     "previous": [
       "Tribute_To_Toledo"
     ],
@@ -2951,6 +3014,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "More mentions of Mantikor, and more clear signs of dissent among the researchers. I suspect tensions eventually escalated.",
     "previous": [
       "Furtive_Meetings"
     ],
@@ -2996,6 +3060,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We’ve only just finished expanding the Tube network towards the Blue Gate, and we’re still laboring away at the rest. My crew’s been building new infrastructure around the valley to safeguard our Raiders, but the constant ARC threat has made it difficult to get anything done.",
     "previous": [
       "Off_The_Radar"
     ],
@@ -3042,6 +3107,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We'd hoped the seawalls at Riven Tides might offer us some protection from the elements, but it seems the hurricanes were not kind to this place, either.",
     "previous": [
       "Off_The_Radar"
     ],
@@ -3085,6 +3151,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "The wide-open coastline used to mean danger, but now it's the only place we can spot new threats moving into the Rust Belt. So we'll have to make our own cover, and reinforce what few defenses we can find.",
     "previous": [
       "Off_The_Radar"
     ],
@@ -3133,6 +3200,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "That collapsed highway worries me; it looks to be recent. Much of Topside may be in ruins, but most of it is from ages ago.",
     "previous": [
       "A_First_Foothold"
     ],
@@ -3175,6 +3243,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Have you spotted any Surveyors; the big round ones? They seem to be transmitting data back into orbit, and I can't help but think it's tied to that signal we picked up. Will you break one open, so we can try to decipher the data?",
     "previous": [
       "Dormant_Barons"
     ],
@@ -3225,6 +3294,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I think I've found something we might exploit. When bigger ARC machines are just far enough from each other, a well-timed distraction could pull one out of position. You want to test that idea?",
     "previous": [
       "Dormant_Barons"
     ],
@@ -3265,6 +3335,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Did you see the flags? The time for cowering is over. You've been more than battle-tested, from what I hear; think you can take on a Rocketeer?",
     "previous": [
       "A_Symbol_of_Unification",
       "Sparks_Fly"
@@ -3326,6 +3397,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "With those Bombardiers roaming around, ARC has found an entirely new way to flush Raiders out of cover. If you're hoping to take one down, you'll need to sharpen your skills and your strategy.",
     "previous": [
       "Into_The_Fray",
       "Out_of_the_Shadows"
@@ -3387,6 +3459,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I found notes that some electrical engineers at the Spaceport were working on advanced, salt-based batteries. If we can get our hands on one, perhaps it'll prevent full-scale power outages next time a ceiling comes crashing down.",
     "previous": [
       "Groundbreaking"
     ],
@@ -3423,6 +3496,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "There's a problem with our sensor coverage at the Spaceport. The security grid is old, so maybe it's just acting up. If you could get it running again, it'd save me a lot of sleepless nights.",
     "previous": [
       "Dust_On_The_Wires"
     ],
@@ -3476,6 +3550,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Says here there was a foreman at The Dam, who got recruited after they canceled Project Heartwood , got put in charge of some big reconstruction project.",
     "previous": [
       "A_Dead_End"
     ],
@@ -3529,6 +3604,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We've got clean water again, but we can't risk people falling ill if the saboteurs return. We need to root them out once and for all.",
     "previous": [
       "Life_Of_A_Pharmacist"
     ],
@@ -3576,6 +3652,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Many Raiders have learned how to dodge a Comet, but far too few know how to bring them down and get at their inner parts.",
     "previous": [
       "Safe_Passage"
     ],
@@ -3624,6 +3701,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Ever since we expanded the tunnels to the Blue Gate, some rare pieces have started appearing on the black market. Meanwhile, I'm stuck here peddling battered old Rattlers. If I don't find new supply lines, I'll be left in the dust.",
     "previous": [
       "A_New_Type_Of_Plant",
       "With_A_Trace"
@@ -3678,6 +3756,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "You know what I've been dreaming of lately? A talking water distiller! Crazy, huh? But seriously, with purer compounds I could make explosives with more oumph! Would be something, right?",
     "previous": [
       "With_A_Trace"
     ],
@@ -3718,6 +3797,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Those Hornet stings can really mess you up, if you're unlucky. And even if you destroy one, you're still wasting ton of ammo. I've been working on a more elegant way to bring them down. Care to make some sparks fly?",
     "previous": [
       "What_Goes_Around"
     ],
@@ -3780,6 +3860,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "All of Speranza is buzzing about Stella Montis right now, and I admit it's caught my attention. Let the others sort [ 1 ] the whats and hows; I'm interested in the tech inside.",
     "previous": [
       "Cold_Storage"
     ],
@@ -3828,6 +3909,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I got a plan. If we recover the evidence against the Tubes Management [ 1 ] before they get to it, we might get them off our backs once and for all.",
     "previous": [
       "Digging_Up_Dirt"
     ],
@@ -3881,6 +3963,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Our library selection has grown pretty stale. Could you head out to Buried City, and find something more for us to read? Make sure you bring something for everyone.",
     "previous": [
       "Digging_Up_Dirt"
     ],
@@ -3931,6 +4014,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "That Stella Montis hard drive container more than just the shutdown documentation - it also had the transport schedules of some pretty critical Exodus components.",
     "previous": [
       "Last_Entry"
     ],
@@ -3973,6 +4057,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Now, time to see if that recon paid off. If we can teach Raiders to effectively counter Bombardiers up there, we'd be a lot safer down here.",
     "previous": [
       "Combat_Recon"
     ],
@@ -4016,6 +4101,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Seems like every other Raider here has some serious hearing damage. I heard rumors they developed some next-generation [ 1 ] hearing aids at Stella Montis. If you can track them down, we might be able to use our indoor voices, for once.",
     "previous": [
       "Snap_And_Salvage",
       "Worth_Your_Salt"
@@ -4076,6 +4162,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "That key you found in the barrel truck... I won't jump to accusations just yet, but this certainly reeks of an inside job. Could you investigate a hunch I have?",
     "previous": [
       "A_Toxic_Trail"
     ],
@@ -4121,6 +4208,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Some scouts have been bringing back reports of these weird plants spreading into the area. Now, this makes your old pal Lance think it may have some interesting uses.",
     "previous": [
       "Building_A_Library"
     ],
@@ -4162,6 +4250,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "That Deforester by the Blue Gate may have caused some real devastation, but a pristine husk like that is also an invaluable sample for our research.",
     "previous": [
       "The_Clean_Dream"
     ],
@@ -4197,6 +4286,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "I'm looking for someone. Bilguun. You might've seen him around, but chances are you haven't. He's... not the most sociable person around, you see. He spends a lot of time Topside, but usually returns to Speranza regularly to check in.",
     "previous": [
       "The_Clean_Dream"
     ],
@@ -4236,6 +4326,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "I had a deal for a Bastion Cell lined up with a Raider called Dodger, but he's gone quiet. I need someone to track down his stash before some scavenger stumbles into it. Interested?",
     "previous": [
       "The_Clean_Dream"
     ],
@@ -4295,6 +4386,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Kids around here have been kicking empty grenade casings around. It's only a matter of time before they're not so empty. So here's the plan: You help me with some prep work, and I'll set up an actual team for the young ones.",
     "previous": [
       "Sparks_Fly"
     ],
@@ -4360,6 +4452,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Have you ever noticed those streaks of light darting across the skies? I've seen too much to believe they're natural, but it'll take more than a hunch to convince Celeste.",
     "previous": [
       "Snap_And_Salvage"
     ],
@@ -4411,6 +4504,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Seems like news of the train derailment spread fast... And drove many workers to stash some very tasty technology away from prying eyes.",
     "previous": [
       "Line_in_the_Sand"
     ],
@@ -4465,6 +4559,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "We know the coordinates for those hearing aids, but I'll have to cross-reference them with a paper map of the Spaceport. Those legs of yours aren't too tired, are they?",
     "previous": [
       "On_Deaf_Ears"
     ],
@@ -4511,6 +4606,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Lucky for you, Dodger's debt can still be settled. Bring me a Bastion Cell. A real one, pulled from a real Bastion. Consider what Dodger owed me transferred to credit for you. Okay?",
     "previous": [
       "Outstanding_Balance"
     ],
@@ -4549,6 +4645,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Hey, question for you. What do you get if you cross a Hornet and Fireball? If your answer is 'a Firefly'. then we're on the same page.",
     "previous": [
       "The_League"
     ],
@@ -4593,6 +4690,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "Everyone's been on edge ever since rumors of that ARC signal spread. I was thinking a movie night would be a great distraction, but I'm missing some crucial supplies. [ 1 ] Help me out, yeah?",
     "previous": [
       "With_A_View"
     ],
@@ -4664,6 +4762,7 @@
       }
     ],
     "inOneRound": true,
+    "dialogue": "You like a certain amount of uncertainty, right? A client wants the contents of a locked safe in Stella Montis. It's intact, so whatever's inside has been there since before the Exodus. Interested?",
     "previous": [
       "With_A_View"
     ],
@@ -4704,6 +4803,7 @@
       }
     ],
     "inOneRound": false,
+    "dialogue": "Looks like the resentment ended up reaching the ground staff of the Spaceport itself. A mutiny brewing, right in the heart of the Exodus.",
     "previous": [
       "Safe_Harbor"
     ],
