@@ -300,6 +300,42 @@ svg#tree { display: block; }
   border-left: 2px solid rgba(34,211,238,.25); }
 .mqw-any-content.open { display: block; }
 
+/* ── Guide tour panel: floats top-center over the canvas, only while the
+   throwaway practice tree is loaded. Uses the "selected/focus" blue since
+   it's meant to draw attention, distinct from either widget's own accent. ── */
+#guide-panel { display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  z-index: 25; width: min(380px, 90vw); max-height: 60vh; overflow-y: auto;
+  background: var(--bg2); border: 1px solid var(--hi); border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.5); padding: 14px 16px; }
+#guide-panel.vis { display: block; }
+#guide-head-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+#guide-step-label { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--hi); flex: 1; }
+#guide-exit-btn { background: none; border: 1px solid var(--b2); color: var(--t2); font-size: 11px;
+  cursor: pointer; padding: 3px 8px; border-radius: 5px; }
+#guide-exit-btn:hover { background: var(--bg3); color: var(--t); }
+#guide-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700;
+  letter-spacing: .01em; color: var(--t); margin-bottom: 6px; }
+#guide-text { font-size: 13px; color: var(--t2); line-height: 1.5; margin-bottom: 12px; }
+#guide-nav { display: flex; gap: 8px; justify-content: flex-end; }
+#guide-nav button { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 6px;
+  cursor: pointer; }
+#guide-back-btn { background: none; border: 1px solid var(--b2); color: var(--t2); }
+#guide-back-btn:hover { background: var(--bg3); color: var(--t); }
+#guide-back-btn:disabled { opacity: .3; cursor: not-allowed; }
+#guide-next-btn { background: var(--hi); border: 1px solid var(--hi); color: #0c0e12; }
+#guide-next-btn:hover { background: #7ba3ff; }
+#guide-next-btn:disabled { background: var(--bg3); border-color: var(--b2); color: var(--t3); cursor: not-allowed; }
+
+/* Spotlight: glows whatever the current guide step wants you to interact
+   with next — works identically on plain HTML buttons and SVG <g> quest
+   nodes since drop-shadow (unlike box-shadow) applies to both. */
+.guide-spotlight { animation: guide-pulse 1.4s ease-in-out infinite; border-radius: inherit; }
+@keyframes guide-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--hi)) drop-shadow(0 0 9px var(--hi)); }
+  50%      { filter: drop-shadow(0 0 9px var(--hi)) drop-shadow(0 0 20px var(--hi)); }
+}
+
 /* Step 2: that map's available quests, steps shown directly (not just names) */
 .mqw-back-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .mqw-back-btn { background: none; border: 1px solid var(--b2); color: var(--t2); font-size: 11px;
@@ -349,7 +385,7 @@ svg#tree { display: block; }
 
 /* ── Rewards category grid (landing screen) ────────────────────────── */
 #rewards-cat-grid { flex: 1; overflow-y: auto; padding: 14px 16px; display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  grid-template-columns: 1fr 1fr; gap: 10px; }
 .rewards-cat-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
   background: var(--bg3); border: 1px solid var(--b2); border-radius: 8px; padding: 12px 14px;
   cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; transition: all .12s; }
@@ -379,6 +415,27 @@ svg#tree { display: block; }
 #rewards-subcat-close { background: none; border: none; color: var(--t2); font-size: 18px; cursor: pointer;
   line-height: 1; padding: 2px 6px; border-radius: 4px; }
 #rewards-subcat-close:hover { background: var(--bg3); color: var(--t); }
+
+/* ── What's New modal ─────────────────────────────────────────────────── */
+#whatsnew-overlay { position: fixed; inset: 0; background: rgba(6,7,10,.6); z-index: 300;
+  display: none; align-items: center; justify-content: center; padding: 20px; }
+#whatsnew-overlay.vis { display: flex; }
+#whatsnew-modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 10px;
+  width: 100%; max-width: 420px; max-height: 80vh; display: flex; flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5); padding: 18px 20px; }
+#whatsnew-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+#whatsnew-head h2 { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700;
+  letter-spacing: .02em; text-transform: uppercase; color: var(--t); flex: 1; }
+#whatsnew-close-x { background: none; border: none; color: var(--t2); font-size: 18px; cursor: pointer;
+  line-height: 1; padding: 2px 6px; border-radius: 4px; }
+#whatsnew-close-x:hover { background: var(--bg3); color: var(--t); }
+#whatsnew-list { list-style: none; overflow-y: auto; margin: 10px 0 16px; display: flex;
+  flex-direction: column; gap: 8px; }
+#whatsnew-list li { font-size: 13px; color: var(--t2); padding-left: 18px; position: relative; line-height: 1.4; }
+#whatsnew-list li::before { content: '▸'; position: absolute; left: 0; color: var(--track); }
+#whatsnew-ok-btn { align-self: flex-end; padding: 7px 16px; font-size: 12px; font-weight: 600;
+  background: var(--acc); border: 1px solid var(--acc); color: #0c0e12; border-radius: 6px; cursor: pointer; }
+#whatsnew-ok-btn:hover { background: #f5b060; }
 
 /* ── Quest details modal ─────────────────────────────────────────────── */
 #quest-detail-overlay { position: fixed; inset: 0; background: rgba(6,7,10,.6); z-index: 300;
@@ -491,6 +548,38 @@ svg#tree { display: block; }
 .reward-src .rs-track.active { background: var(--track); border-color: var(--track); color: #0c0e12; }
 .reward-src .rs-track:disabled { cursor: default; opacity: .6; }
 #rewards-empty { padding: 30px 16px; text-align: center; font-size: 12px; color: var(--t3); }
+
+/* ── Phone layout ──────────────────────────────────────────────────────
+   The three-pane desktop layout (sidebar | canvas | active-panel side by
+   side) doesn't fit a phone screen at all — below this width they stack
+   vertically instead, each getting a bounded, scrollable strip, with the
+   canvas keeping the majority of the height since it's the actual tool. ── */
+@media (max-width: 720px) {
+  #topbar { padding: 8px 10px; gap: 8px; }
+  #search-wrap { min-width: 120px; }
+  .btn { padding: 6px 9px; font-size: 11px; }
+
+  #main { flex-direction: column; overflow-y: auto; }
+  #sidebar, #active-panel {
+    width: 100%; max-width: 100%; flex-shrink: 0;
+    max-height: 26vh; border: none; border-bottom: 1px solid var(--b);
+  }
+  #canvas-wrap { min-height: 45vh; }
+
+  /* The pull-tab widgets already scale via min(Npx, vw); just shrink the
+     tabs themselves a bit so two stacked corners don't eat the screen. */
+  #aqw-toggle, #mqw-toggle { width: 26px; height: 100px; }
+  #aqw-panel, #mqw-panel { max-height: 46vh; }
+
+  #guide-panel { top: 8px; padding: 12px 14px; max-height: 50vh; }
+
+  #rewards-cat-grid, .mqw-map-btn-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 420px) {
+  #search-wrap { display: none; } /* the sidebar + widgets already cover "find a quest" on the smallest screens */
+  #rewards-cat-grid, .mqw-map-btn-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -533,8 +622,10 @@ svg#tree { display: block; }
     <input id="inp-search" type="text" placeholder="Find quest or reward… (Ctrl+F)">
   </div>
   <button class="btn" onclick="fitView()">⤢ Fit</button>
-  <button class="btn" onclick="openRewards()">🏆 Rewards</button>
+  <button id="btn-rewards" class="btn" onclick="openRewards()"><svg width="13" height="13" viewBox="0 0 16 16" style="display:inline-block;vertical-align:-2px;margin-right:4px" fill="currentColor"><path d="M8 1.3l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.2l-3.8 2 .7-4.3-3.1-3 4.3-.6L8 1.3z"/></svg>Rewards</button>
+  <button class="btn" onclick="openWhatsNew()" title="See recent changes"><svg width="13" height="13" viewBox="0 0 16 16" style="display:inline-block;vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2c-1.4 0-2.5 1.1-2.5 2.5v2c0 .4-.15.8-.4 1.1L4 9h8l-1.1-1.4c-.25-.3-.4-.7-.4-1.1v-2C10.5 3.1 9.4 2 8 2z"/><path d="M6.5 9.5a1.5 1.5 0 003 0"/></svg>What's New</button>
   <div class="sep"></div>
+  <button class="btn" onclick="startGuide()" title="Practice on a fake quest tree — nothing here affects your real progress"><svg width="13" height="13" viewBox="0 0 16 16" style="display:inline-block;vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><path d="M10.2 5.8L7.3 7.3l-1.5 2.9 2.9-1.5 1.5-2.9z" fill="currentColor" stroke="none"/></svg>Guide</button>
   <button class="btn danger" onclick="startExpedition()" title="Reset all progress and start over">⟲ Expedition</button>
 </div>
 
@@ -588,6 +679,20 @@ svg#tree { display: block; }
       </div>
       <button id="mqw-toggle" onclick="toggleMapQuestWidget()"><span id="mqw-toggle-fill">Quests by Map</span></button>
     </div>
+
+    <!-- Guide tour panel: only shown while browsing the throwaway practice tree -->
+    <div id="guide-panel">
+      <div id="guide-head-row">
+        <span id="guide-step-label"></span>
+        <button id="guide-exit-btn" onclick="exitGuide()">✕ Exit Guide</button>
+      </div>
+      <div id="guide-title"></div>
+      <div id="guide-text"></div>
+      <div id="guide-nav">
+        <button id="guide-back-btn" onclick="guidePrev()">← Back</button>
+        <button id="guide-next-btn" onclick="guideNext()">Next →</button>
+      </div>
+    </div>
   </div>
 
   <!-- Active quests panel -->
@@ -611,7 +716,7 @@ svg#tree { display: block; }
     <span class="ctx-icon" style="display:inline-flex;align-items:center"><svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 16 16"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg></span><span id="ctx-track-label">Track quest</span>
   </div>
   <div class="ctx-item" id="ctx-ready" onclick="ctxMarkReady()">
-    <span class="ctx-icon">⇒</span><span>Mark quest as available (automatically clears previous quests)</span>
+    <span class="ctx-icon" style="display:inline-flex;align-items:center"><svg style="width:12px;height:12px;display:inline-block;vertical-align:middle" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1L4 9h3.3L6 15l6-8.5H8.5L9 1z"/></svg></span><span>Mark quest as available</span>
   </div>
   <div class="ctx-item" onclick="ctxSelect()">
     <span class="ctx-icon">→</span><span>Show path</span>
@@ -684,6 +789,20 @@ svg#tree { display: block; }
   </div>
 </div>
 
+<!-- What's New: a changelog shown once per version to anyone who hasn't seen
+     it yet, and reopenable anytime via the topbar button. Edit CHANGELOG in
+     the script below whenever there's a notable update. -->
+<div id="whatsnew-overlay" onclick="if(event.target===this) closeWhatsNew()">
+  <div id="whatsnew-modal">
+    <div id="whatsnew-head">
+      <h2 id="whatsnew-title">What's New</h2>
+      <button id="whatsnew-close-x" onclick="closeWhatsNew()">✕</button>
+    </div>
+    <ul id="whatsnew-list"></ul>
+    <button id="whatsnew-ok-btn" onclick="closeWhatsNew()">Got it</button>
+  </div>
+</div>
+
 <!-- Hover card: same quest info, surfaced shortly after the pointer rests on a node.
      Two nested layers: the outer frame supplies the white outline + drop shadow,
      the inner panel supplies the dark background — both clipped to the same
@@ -716,6 +835,187 @@ svg#tree { display: block; }
 </div>
 
 <script>
+/* ═══════════════════════════════════════════════════════════════
+   CHANGELOG — bump `version` and update `items` whenever the site gets a
+   notable update. Visitors who haven't seen this version yet are shown it
+   automatically on load; anyone can reopen it via the What's New button.
+═══════════════════════════════════════════════════════════════ */
+const CHANGELOG = {
+  version: '1.0',
+  items: [
+    'Reward tooltips now show real in-game icons for items and traders',
+    'Added the Active Quest widget — pulls out what to do next for anything you\'re tracking, with its own checklist',
+    'Added the Quests by Map widget — pick a map, see everything available there right now',
+    'Quest checklists now sync live across every panel that shows them',
+    'Added a Guide button with a practice quest tree for learning the interface',
+  ],
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   GUIDE TOUR — a small throwaway quest tree for learning the interface.
+   Reuses real trader/item slugs so their icons resolve from the already-
+   cached ItemIcons/TraderIcons without needing separate fake assets.
+═══════════════════════════════════════════════════════════════ */
+// Deliberately bigger and more tangled than a minimal example — multiple
+// branches, a real convergence point, several layers deep, every trader and
+// several maps in rotation, and reward variety spanning blueprints, keys,
+// skins, utility/healing and misc, so opening the Rewards catalog or the
+// Quests by Map widget during the tour actually has something to show.
+const TUTORIAL_QUESTS = {
+  Tutorial_Start: {
+    title: 'Learn The Ropes', trader: 'Shani', location: ['Any'],
+    objectives: [{ text: 'Click this quest to trace the path leading to it', optional: false }],
+    inOneRound: false, previous: [], next: ['Tutorial_A', 'Tutorial_B', 'Tutorial_C'],
+    rewards: [{ qty: 1, name: 'Rattler III', item: 'Rattler' }], grantedItems: [],
+  },
+  Tutorial_A: {
+    title: 'First Steps', trader: 'Apollo', location: ['Dam Battlegrounds'],
+    objectives: [{ text: 'This tree branches three ways right from the start — each route is independent', optional: false }],
+    inOneRound: false, previous: ['Tutorial_Start'], next: ['Tutorial_A2'],
+    rewards: [{ qty: 2, name: 'Defibrillator', item: 'Defibrillator' }], grantedItems: [],
+  },
+  Tutorial_A2: {
+    title: 'Digging Deeper', trader: 'Apollo', location: ['Dam Battlegrounds'],
+    objectives: [{ text: 'Keep following this route — real chains often run several quests deep', optional: false }],
+    inOneRound: false, previous: ['Tutorial_A'], next: ['Tutorial_A3'],
+    rewards: [{ qty: 1, name: 'Vita Spray Blueprint', item: 'Vita_Spray_Blueprint' }], grantedItems: [],
+  },
+  Tutorial_A3: {
+    title: 'Track Me!', trader: 'Apollo', location: ['Dam Battlegrounds'],
+    objectives: [
+      { text: 'Right-click this quest and choose "Track quest"', optional: false },
+      { text: 'Try "Mark quest as available" too, if you like', optional: true },
+    ],
+    inOneRound: false, previous: ['Tutorial_A2'], next: ['Tutorial_Grand_Convergence'],
+    rewards: [], grantedItems: [{ qty: 3, name: 'Shrapnel Grenade', item: 'Shrapnel_Grenade' }],
+  },
+  Tutorial_B: {
+    title: 'A Parallel Path', trader: 'Celeste', location: ['Buried City'],
+    objectives: [{ text: 'This route splits again into two forks — both need finishing before the paths reunite', optional: false }],
+    inOneRound: true, previous: ['Tutorial_Start'], next: ['Tutorial_B1', 'Tutorial_B2'],
+    rewards: [{ qty: 1, name: 'Binoculars', item: 'Binoculars' }], grantedItems: [],
+  },
+  Tutorial_B1: {
+    title: 'Left Fork', trader: 'Celeste', location: ['Stella Montis'],
+    objectives: [{ text: 'One half of the split — different branches can pass through completely different maps', optional: false }],
+    inOneRound: false, previous: ['Tutorial_B'], next: ['Tutorial_Grand_Convergence'],
+    rewards: [{ qty: 1, name: 'Origin Outfit (Orange Camo Color)', item: 'Outfits' }], grantedItems: [],
+  },
+  Tutorial_B2: {
+    title: 'Right Fork', trader: 'Celeste', location: ['Buried City'],
+    objectives: [{ text: 'The other half of the split — both forks are required before anything downstream unlocks', optional: false }],
+    inOneRound: false, previous: ['Tutorial_B'], next: ['Tutorial_Grand_Convergence'],
+    rewards: [{ qty: 1, name: 'Patrol Car Key', item: 'Patrol_Car_Key' }], grantedItems: [],
+  },
+  Tutorial_C: {
+    title: 'Third Route', trader: 'Tian Wen', location: ['Spaceport'],
+    objectives: [{ text: 'The third and final route out of the start', optional: false }],
+    inOneRound: false, previous: ['Tutorial_Start'], next: ['Tutorial_C2'],
+    rewards: [{ qty: 1, name: 'Raider Hatch Key', item: 'Raider_Hatch_Key' }], grantedItems: [],
+  },
+  Tutorial_C2: {
+    title: 'Uncovering Clues', trader: 'Tian Wen', location: ['The Blue Gate'],
+    objectives: [{ text: 'Almost to where every route reunites', optional: false }],
+    inOneRound: false, previous: ['Tutorial_C'], next: ['Tutorial_Grand_Convergence'],
+    rewards: [{ qty: 1, name: 'Burletta Blueprint', item: 'Burletta_Blueprint' }],
+    grantedItems: [{ qty: 10, name: 'Light Impact Grenade', item: 'Light_Impact_Grenade' }],
+  },
+  Tutorial_Grand_Convergence: {
+    title: 'Paths Combine', trader: 'Lance', location: ['Any'],
+    objectives: [{ text: 'This needed all three original routes finished — big convergence points like this are common in the real tree', optional: false }],
+    inOneRound: false, previous: ['Tutorial_A3', 'Tutorial_B1', 'Tutorial_B2', 'Tutorial_C2'], next: ['Tutorial_Reward', 'Tutorial_Sidequest'],
+    rewards: [{ qty: 1, name: 'Aphelion', item: 'Aphelion' }], grantedItems: [],
+  },
+  Tutorial_Reward: {
+    title: 'The Big Payoff', trader: 'Lance', location: ['Any'],
+    objectives: [{ text: 'Not every quest needs a fancy reward — some just pay straightforward coin', optional: false }],
+    inOneRound: false, previous: ['Tutorial_Grand_Convergence'], next: ['Tutorial_Penultimate'],
+    rewards: [{ qty: 500, name: 'Coins', item: 'Coins' }], grantedItems: [],
+  },
+  Tutorial_Sidequest: {
+    title: 'An Optional Errand', trader: 'Shani', location: ['Riven Tides'],
+    objectives: [
+      { text: 'Not every branch is required to keep progressing', optional: false },
+      { text: 'This one\'s entirely skippable and still optional itself', optional: true },
+    ],
+    inOneRound: false, previous: ['Tutorial_Grand_Convergence'], next: ['Tutorial_Penultimate'],
+    rewards: [{ qty: 50, name: 'Medium Ammo', item: 'Medium_Ammo' }], grantedItems: [],
+  },
+  Tutorial_Penultimate: {
+    title: 'Almost There', trader: 'Lance', location: ['Any'],
+    objectives: [{ text: 'This needed both "The Big Payoff" and the optional errand finished first', optional: false }],
+    inOneRound: false, previous: ['Tutorial_Reward', 'Tutorial_Sidequest'], next: ['Tutorial_End'],
+    rewards: [{ qty: 5, name: 'Duct Tape', item: 'Duct_Tape' }], grantedItems: [],
+  },
+  Tutorial_End: {
+    title: 'You Got This', trader: 'Lance', location: ['Any'],
+    objectives: [{ text: 'Click "Exit Guide" below whenever you\'re ready', optional: false }],
+    inOneRound: false, previous: ['Tutorial_Penultimate'], next: [],
+    rewards: [{ qty: 1, name: 'Wires', item: 'Wires' }], grantedItems: [],
+  },
+};
+
+// Two flags set by the relevant action handlers (guarded to only fire while
+// guideActive) so steps that ask you to open something can actually verify
+// you did it, not just take your word for it via a plain Next button.
+let guideRewardsOpened = false;
+let guideHoverShown = false;
+
+// `highlightNode` glows a specific tree node; `highlightEl` glows a DOM
+// element by id (a button/tab) — either way, refreshGuideStepGate() re-
+// applies whichever one belongs to the current step after every action.
+const GUIDE_STEPS = [
+  {
+    title: 'Welcome!',
+    text: 'This is a small practice quest tree — nothing you do here touches your real progress. Click "Learn The Ropes" below to trace the path leading to it.',
+    check: () => selectedSlug === 'Tutorial_Start',
+    highlightNode: 'Tutorial_Start',
+  },
+  {
+    title: 'Hover for details',
+    text: 'Notice the tree splits three ways after that. Hover "A Parallel Path" for about a quarter second — a card pops up with its trader, map, objectives, and rewards, without needing to click anything.',
+    check: () => guideHoverShown,
+    highlightNode: 'Tutorial_B',
+  },
+  {
+    title: 'Rewards catalog',
+    text: 'Click Rewards in the top bar to browse every reward in the game by category, and jump straight to tracking whichever quest grants the one you want.',
+    check: () => guideRewardsOpened,
+    highlightEl: 'btn-rewards',
+  },
+  {
+    title: 'Follow a route',
+    text: 'The top route runs three quests deep before it reconnects with the others. Click through "First Steps" → "Digging Deeper" → "Track Me!" to reach the end of it.',
+    check: () => selectedSlug === 'Tutorial_A3',
+    highlightNode: 'Tutorial_A3',
+  },
+  {
+    title: 'Right-click for options',
+    text: 'Right-click "Track Me!" and choose "Track quest" from the menu that appears — watch the whole chain behind it light up, not just this one node.',
+    check: () => tracking.has('Tutorial_A3'),
+    highlightNode: 'Tutorial_A3',
+  },
+  {
+    title: 'Tracked quests follow you',
+    text: 'That\'s what tracking does for real quests too: it traces every prerequisite all the way back to the start, so you always know the full chain ahead of you — and it now shows up in the sidebar with zero extra clicking.',
+    check: () => tracking.has('Tutorial_A3'),
+    highlightNode: 'Tutorial_A3',
+  },
+  {
+    title: 'Active Quest widget',
+    text: 'Pull open the vertical tab at the bottom-left — it shows exactly what to do next for whatever you\'re tracking, with its own checklist.',
+    check: () => document.getElementById('active-quest-widget').classList.contains('vis'),
+    highlightEl: 'aqw-toggle',
+  },
+  {
+    title: 'Quests by Map widget',
+    text: 'Pull open the tab at the top-left — pick a map and see every quest (and its steps) available there right now, handy right before loading into a raid.',
+    check: () => document.getElementById('map-quest-widget').classList.contains('vis'),
+    highlightEl: 'mqw-toggle',
+  },
+  { title: 'That\'s the basics!', text: 'Click "Exit Guide" below whenever you\'re ready to go back to your real quest tree.', highlightEl: 'guide-exit-btn' },
+];
+
 /* ═══════════════════════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════════════════════ */
@@ -774,11 +1074,17 @@ function migrateStaleSlugs() {
 
   if (changed) { saveDone(); saveObjectiveProgress(); }
 }
+// While the Guide tour is active, Q/done/tracking/objectiveProgress all
+// point at throwaway tutorial state — none of it should ever reach the
+// player's real saved progress.
+let guideActive = false;
 function saveDone() {
+  if (guideActive) return;
   localStorage.setItem('arc-done', JSON.stringify([...done]));
   localStorage.setItem('arc-tracking', JSON.stringify([...tracking]));
 }
 function saveObjectiveProgress() {
+  if (guideActive) return;
   const raw = {};
   Object.entries(objectiveProgress).forEach(([slug, set]) => { raw[slug] = [...set]; });
   localStorage.setItem('arc-objectives', JSON.stringify(raw));
@@ -797,6 +1103,7 @@ function toggleDone(slug) {
   else renderAutoTrackSidebar();
   refreshActiveQuestWidgetIfOpen();
   refreshMapQuestWidgetIfOpen();
+  refreshGuideStepGate();
 }
 function toggleTracking(slug) {
   if (tracking.has(slug)) tracking.delete(slug); else { tracking.add(slug); done.delete(slug); }
@@ -808,6 +1115,7 @@ function toggleTracking(slug) {
   else renderAutoTrackSidebar();
   refreshActiveQuestWidgetIfOpen();
   refreshMapQuestWidgetIfOpen();
+  refreshGuideStepGate();
 }
 // Mark a quest as active-ready: auto-mark all its ancestors as done, track this one
 function markReady(slug) {
@@ -824,6 +1132,7 @@ function markReady(slug) {
   else renderAutoTrackSidebar();
   refreshActiveQuestWidgetIfOpen();
   refreshMapQuestWidgetIfOpen();
+  refreshGuideStepGate();
 }
 // Refresh just the done/tracking badges in the sidebar without rebuilding it
 function refreshSidebarDoneState() {
@@ -894,6 +1203,16 @@ async function autoLoad() {
     else fitView();
     restoreActiveQuestWidget();
     restoreMapQuestWidget();
+    // First-ever visit: walk them through the Guide instead of a changelog
+    // for changes they never saw happen — mark the current version seen so
+    // What's New only starts firing for them from their next real update on.
+    if (!localStorage.getItem('arc-guide-seen')) {
+      localStorage.setItem('arc-guide-seen', '1');
+      localStorage.setItem('arc-seen-changelog', CHANGELOG.version);
+      startGuide();
+    } else {
+      maybeShowWhatsNew();
+    }
   } catch(err) {
     setStatus('err', `Could not load quests.json — ${err.message}`, '');
   }
@@ -998,6 +1317,7 @@ function selectQuest(slug) {
   renderAll();
   // Scroll to node in tree
   scrollToNode(slug);
+  refreshGuideStepGate();
 }
 
 // Shown in the sidebar whenever nothing is explicitly selected: traces the
@@ -1054,8 +1374,9 @@ function toggleActiveQuestWidget() {
   const widget = document.getElementById('active-quest-widget');
   const opening = !widget.classList.contains('vis');
   widget.classList.toggle('vis', opening);
-  localStorage.setItem('arc-aqw-open', opening ? '1' : '0');
+  if (!guideActive) localStorage.setItem('arc-aqw-open', opening ? '1' : '0');
   if (opening) renderActiveQuestWidget();
+  refreshGuideStepGate();
 }
 // Restore the widget's open/closed state from the last session, no click required.
 function restoreActiveQuestWidget() {
@@ -1078,8 +1399,9 @@ function toggleMapQuestWidget() {
   const widget = document.getElementById('map-quest-widget');
   const opening = !widget.classList.contains('vis');
   widget.classList.toggle('vis', opening);
-  localStorage.setItem('arc-mqw-open', opening ? '1' : '0');
+  if (!guideActive) localStorage.setItem('arc-mqw-open', opening ? '1' : '0');
   if (opening) renderMapQuestWidget();
+  refreshGuideStepGate();
 }
 function restoreMapQuestWidget() {
   if (localStorage.getItem('arc-mqw-open') !== '1') return;
@@ -1636,7 +1958,7 @@ function renderTree(srch) {
 <circle cx="${p.x+NW-10}" cy="${p.y+10}" r="2" fill="white" pointer-events="none"/>`
       : '';
 
-    s += `<g class="qn" onclick="selectQuest('${esc}')" oncontextmenu="showCtxMenu(event,'${esc}')"
+    s += `<g class="qn" id="${guideNodeElId(n)}" onclick="selectQuest('${esc}')" oncontextmenu="showCtxMenu(event,'${esc}')"
   onmouseenter="scheduleHoverCard(event,'${esc}')" onmouseleave="cancelHoverCard()">
 <rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="4"
   fill="${fillColor}" fill-opacity="${fillOpacity}"
@@ -1805,10 +2127,16 @@ function startExpedition() {
 ═══════════════════════════════════════════════════════════════ */
 let rewardIndex = null; // { rewardName: [{slug, qty, kind}] }
 
-const REWARD_CATEGORIES = ['Blueprints', 'Utility and Healing', 'Skins', 'Miscellaneous'];
+// "Browse All" isn't a real bucket rewardCategory() ever returns — it's a
+// sentinel handled specially wherever categories get filtered, showing every
+// reward unfiltered. Keeping it in this list is what makes it show up as a
+// 6th button, filling out the 2-column grid to a clean 3 rows instead of an
+// oddly incomplete last row.
+const REWARD_CATEGORIES = ['Blueprints', 'Utility and Healing', 'Skins', 'Keys', 'Miscellaneous', 'Browse All'];
 
 function rewardCategory(name) {
   if (/blueprint/i.test(name)) return 'Blueprints';
+  if (/key(card)?\b/i.test(name)) return 'Keys';
   if (/outfit|\(.*color\)|charm|emote/i.test(name)) return 'Skins';
   if (/grenade|\bmine\b|\btrap\b|shield|vita|adrenaline|bandage|antiseptic|defibrillator|tactical mk|light stick|binoculars|zipline|barricade kit|door blocker|noisemaker|surge shield recharger|combat mk|looting mk|firecracker|flame spray|fireworks|flare/i.test(name)) return 'Utility and Healing';
   return 'Miscellaneous';
@@ -1843,7 +2171,9 @@ const REWARD_CAT_REPRESENTATIVE_ITEM = {
   'Blueprints': 'Vita_Spray_Blueprint',
   'Utility and Healing': 'Vita_Shot',
   'Skins': 'Outfits',
+  'Keys': 'Raider_Hatch_Key',
   'Miscellaneous': 'Coins',
+  'Browse All': 'Medium_Ammo',
 };
 let currentRewardsCategory = null;
 
@@ -1857,10 +2187,17 @@ function openRewards() {
   if (!rewardIndex) buildRewardIndex();
   document.getElementById('rewards-overlay').classList.add('vis');
   renderRewardCategoryGrid();
+  guideRewardsOpened = true;
+  refreshGuideStepGate();
 }
 function closeRewards() {
   document.getElementById('rewards-overlay').classList.remove('vis');
   document.getElementById('rewards-subcat-overlay').classList.remove('vis');
+}
+
+// "Browse All" bypasses the category filter entirely and shows every reward.
+function namesInCategory(names, cat) {
+  return cat === 'Browse All' ? names : names.filter(n => rewardCategory(n) === cat);
 }
 
 function renderRewardCategoryGrid() {
@@ -1872,7 +2209,7 @@ function renderRewardCategoryGrid() {
   const grid = document.getElementById('rewards-cat-grid');
   grid.innerHTML = '';
   REWARD_CATEGORIES.forEach(cat => {
-    const catNames = names.filter(n => rewardCategory(n) === cat);
+    const catNames = namesInCategory(names, cat);
     const sources = catNames.flatMap(n => rewardIndex[n]);
     const gotQty = sources.filter(isObtained).reduce((s, src) => s + src.qty, 0);
     const totalQty = sources.reduce((s, src) => s + src.qty, 0);
@@ -1910,8 +2247,7 @@ function closeRewardsCategory(fullyClose) {
 
 function renderRewards(search) {
   const body = document.getElementById('rewards-body');
-  const names = Object.keys(rewardIndex)
-    .filter(n => rewardCategory(n) === currentRewardsCategory)
+  const names = namesInCategory(Object.keys(rewardIndex), currentRewardsCategory)
     .sort((a, b) => a.localeCompare(b));
   const q = (search || '').toLowerCase().trim();
 
@@ -1988,6 +2324,141 @@ function trackFromReward(slug) {
    QUEST DETAILS — what to do, who gave it, which map, and its items
 ═══════════════════════════════════════════════════════════════ */
 function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+/* ═══════════════════════════════════════════════════════════════
+   WHAT'S NEW
+═══════════════════════════════════════════════════════════════ */
+function openWhatsNew() {
+  document.getElementById('whatsnew-list').innerHTML =
+    CHANGELOG.items.map(i => `<li>${escapeHtml(i)}</li>`).join('');
+  document.getElementById('whatsnew-overlay').classList.add('vis');
+}
+function closeWhatsNew() {
+  document.getElementById('whatsnew-overlay').classList.remove('vis');
+  localStorage.setItem('arc-seen-changelog', CHANGELOG.version);
+}
+// Auto-shown once per version, on load, to anyone who hasn't seen it yet.
+function maybeShowWhatsNew() {
+  if (localStorage.getItem('arc-seen-changelog') !== CHANGELOG.version) openWhatsNew();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GUIDE TOUR — swaps in a throwaway practice tree so the player can try
+   every interaction without touching their real saved progress. All the
+   save* functions are guarded by `guideActive`, so nothing done here ever
+   reaches localStorage; exiting just restores whatever was backed up.
+═══════════════════════════════════════════════════════════════ */
+let guideStepIndex = 0;
+let realQ = null, realDone = null, realTracking = null, realObjectiveProgress = null;
+let realScale = 1, realTx = 0, realTy = 0;
+
+function startGuide() {
+  if (guideActive) return;
+
+  realQ = Q;
+  realDone = new Set(done);
+  realTracking = new Set(tracking);
+  realObjectiveProgress = {};
+  Object.entries(objectiveProgress).forEach(([slug, set]) => { realObjectiveProgress[slug] = new Set(set); });
+  realScale = scale; realTx = tx; realTy = ty;
+
+  closeRewards();
+  closeQuestDetail();
+  cancelHoverCard();
+
+  guideActive = true;
+  Q = TUTORIAL_QUESTS;
+  done = new Set();
+  tracking = new Set();
+  objectiveProgress = {};
+  guideStepIndex = 0;
+  rewardIndex = null; // rebuild against tutorial data instead of showing a stale real-data cache
+  guideRewardsOpened = false;
+  guideHoverShown = false;
+
+  clearPath();
+  renderAll();
+  // Center on the starting quest at a comfortable zoom instead of fitView()'s
+  // whole-tree overview, so the very first thing the player sees is nicely
+  // framed rather than small and off to one side.
+  scale = 1;
+  scrollToNode('Tutorial_Start');
+  document.getElementById('guide-panel').classList.add('vis');
+  renderGuideStep();
+}
+
+function exitGuide() {
+  if (!guideActive) return;
+  guideActive = false;
+
+  Q = realQ;
+  done = realDone;
+  tracking = realTracking;
+  objectiveProgress = realObjectiveProgress;
+  scale = realScale; tx = realTx; ty = realTy;
+  rewardIndex = null; // rebuild against real data instead of showing the tutorial's stale cache
+
+  document.getElementById('guide-panel').classList.remove('vis');
+  clearPath();
+  renderAll();
+  applyT();
+  refreshActiveQuestWidgetIfOpen();
+  refreshMapQuestWidgetIfOpen();
+}
+
+function renderGuideStep() {
+  const step = GUIDE_STEPS[guideStepIndex];
+  const isLast = guideStepIndex === GUIDE_STEPS.length - 1;
+  document.getElementById('guide-step-label').textContent = `Step ${guideStepIndex + 1} of ${GUIDE_STEPS.length}`;
+  document.getElementById('guide-title').textContent = step.title;
+  document.getElementById('guide-text').textContent = step.text;
+  document.getElementById('guide-back-btn').disabled = guideStepIndex === 0;
+  const nextBtn = document.getElementById('guide-next-btn');
+  nextBtn.textContent = isLast ? 'Finish' : 'Next →';
+  nextBtn.onclick = isLast ? exitGuide : guideNext;
+  refreshGuideStepGate();
+}
+// Re-checks the current step's condition and enables/disables Next
+// accordingly — called on render and after every relevant action while the
+// guide is active, so the button unlocks the moment you actually do the thing.
+function refreshGuideStepGate() {
+  if (!guideActive) return;
+  const step = GUIDE_STEPS[guideStepIndex];
+  const isLast = guideStepIndex === GUIDE_STEPS.length - 1;
+  if (!isLast) {
+    const satisfied = !step.check || step.check();
+    const nextBtn = document.getElementById('guide-next-btn');
+    nextBtn.disabled = !satisfied;
+    nextBtn.textContent = satisfied ? 'Next →' : 'Try it first…';
+  }
+  applyGuideHighlight(step);
+}
+// Quest nodes are plain SVG <g> elements rebuilt from scratch on every
+// render, so they get a stable id purely so the guide can find and glow
+// whichever one the current step cares about — safe to call for any slug,
+// tutorial or real.
+function guideNodeElId(slug) { return 'qn-' + slug.replace(/[^a-zA-Z0-9_]/g, ''); }
+
+function applyGuideHighlight(step) {
+  document.querySelectorAll('.guide-spotlight').forEach(el => el.classList.remove('guide-spotlight'));
+  const targetId = step.highlightEl || (step.highlightNode && guideNodeElId(step.highlightNode));
+  if (!targetId) return;
+  let el = document.getElementById(targetId);
+  if (!el) return;
+  // The pull-tab toggles carry their own corner-cut clip-path, which clips
+  // away any filter/box-shadow bleed applied to that same element — so the
+  // glow has to live on their un-clipped wrapping widget div instead.
+  if (targetId === 'aqw-toggle' || targetId === 'mqw-toggle') el = el.parentElement;
+  el.classList.add('guide-spotlight');
+}
+function guideNext() {
+  const step = GUIDE_STEPS[guideStepIndex];
+  if (step.check && !step.check()) return; // gated — try the action first
+  if (guideStepIndex < GUIDE_STEPS.length - 1) { guideStepIndex++; renderGuideStep(); }
+}
+function guidePrev() {
+  if (guideStepIndex > 0) { guideStepIndex--; renderGuideStep(); }
+}
 
 // The modal's pills (.qd-pill) use plain rounded corners, so a single span is
 // fine. The hover-card's (.qhc-pill) use a clip-path corner cut, which needs
@@ -2072,6 +2543,8 @@ function showHoverCard(targetEl, slug) {
   if (!populateQuestInfoInto('qhc', slug)) return;
   const card = document.getElementById('quest-hover-card');
   card.classList.add('vis');
+  guideHoverShown = true;
+  refreshGuideStepGate();
 
   const rect = targetEl.getBoundingClientRect();
   const cw = card.offsetWidth, ch = card.offsetHeight;
@@ -2101,7 +2574,7 @@ function applyT(){ wrapEl.style.transform=`translate(${tx}px,${ty}px) scale(${sc
 
 // Persist the pan/zoom transform so reloading the page restores the exact
 // same view instead of re-fitting from scratch every time.
-function saveView(){ localStorage.setItem('arc-view', JSON.stringify({scale, tx, ty})); }
+function saveView(){ if (!guideActive) localStorage.setItem('arc-view', JSON.stringify({scale, tx, ty})); }
 function loadView(){ try { return JSON.parse(localStorage.getItem('arc-view')); } catch { return null; } }
 
 canvasEl.addEventListener('wheel', e=>{
