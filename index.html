@@ -1496,6 +1496,35 @@ function availableQuestsByMap() {
   return byMap;
 }
 
+// A quest spanning several maps usually phrases each objective around the
+// one map it applies to by name (e.g. "On Dam Battlegrounds, search 2
+// containers..."). Once every objective mentioning a given map is checked
+// off, there's nothing left to do there even though the quest as a whole
+// isn't done yet (other maps' objectives may remain) — so it should drop
+// out of just *that* map's list. Single-map quests never hide early this
+// way: with only one map, "partially done" and "done" are the same case,
+// already handled by getActive() dropping it once the quest itself is done.
+function questDoneForMap(slug, mapName) {
+  const q = Q[slug];
+  if (!q.location || q.location.length < 2) return false;
+  const objectives = q.objectives || [];
+  const needle = mapName.toLowerCase();
+  const tiedIdx = [];
+  objectives.forEach((o, i) => { if (o.text.toLowerCase().includes(needle)) tiedIdx.push(i); });
+  if (!tiedIdx.length) return false; // can't tell which objective(s) belong to this map — leave it visible
+  const progressSet = objectiveProgress[slug] || new Set();
+  return tiedIdx.every(i => progressSet.has(i));
+}
+
+// Available quests for one map-widget bucket, with per-map-progress quests
+// already filtered out. "Any Map" quests aren't tied to a single place, so
+// the filter doesn't apply to that bucket.
+function questsAvailableForMap(mapName) {
+  const byMap = availableQuestsByMap();
+  const list = byMap[mapName] || [];
+  return mapName === 'Any Map' ? list : list.filter(slug => !questDoneForMap(slug, mapName));
+}
+
 function renderMapQuestWidget() {
   if (mapWidgetSelectedMap) renderMapWidgetSteps(mapWidgetSelectedMap);
   else renderMapWidgetPicker();
@@ -1504,15 +1533,14 @@ function renderMapQuestWidget() {
 function renderMapWidgetPicker() {
   const body = document.getElementById('mqw-body');
   body.innerHTML = '';
-  const byMap = availableQuestsByMap();
-  const anyCount = (byMap['Any Map'] || []).length;
+  const anyCount = questsAvailableForMap('Any Map').length;
   // Always show every map the game has, even at 0 available, plus "Any Map" last.
   const mapNames = [...allMapNames(), 'Any Map'];
 
   const grid = document.createElement('div');
   grid.className = 'mqw-map-btn-grid';
   mapNames.forEach(mapName => {
-    const count = (byMap[mapName] || []).length;
+    const count = questsAvailableForMap(mapName).length;
     const isAnyMap = mapName === 'Any Map';
     const countLabel = isAnyMap
       ? `<span class="mqw-any-color">${count} available</span>`
@@ -1576,13 +1604,12 @@ function renderMapWidgetSteps(mapName) {
   backRow.appendChild(label);
   body.appendChild(backRow);
 
-  const byMap = availableQuestsByMap();
   const isAnyMap = mapName === 'Any Map';
-  const mapSpecific = (byMap[mapName] || []).slice().sort((a, b) => Q[a].title.localeCompare(Q[b].title));
+  const mapSpecific = questsAvailableForMap(mapName).slice().sort((a, b) => Q[a].title.localeCompare(Q[b].title));
   // Anywhere-playable quests are genuinely doable on every specific map too —
   // kept in a separate, collapsed-by-default dropdown so the map-specific
   // list stays the clean, primary view instead of the two blending together.
-  const anyHere = isAnyMap ? [] : (byMap['Any Map'] || []).slice().sort((a, b) => Q[a].title.localeCompare(Q[b].title));
+  const anyHere = isAnyMap ? [] : questsAvailableForMap('Any Map').slice().sort((a, b) => Q[a].title.localeCompare(Q[b].title));
 
   if (!mapSpecific.length && !anyHere.length) {
     const empty = document.createElement('div');
@@ -1635,6 +1662,17 @@ function toggleObjective(slug, idx) {
   if (set.has(idx)) set.delete(idx); else set.add(idx);
   saveObjectiveProgress();
   syncObjectiveCheckboxes(slug, idx);
+  // If that was the last objective tied to the map currently open in the
+  // Quests by Map widget, this quest no longer belongs in that map's list —
+  // refresh so it drops out immediately instead of lingering until some
+  // unrelated re-render. Only worth rebuilding the list on this exact
+  // event (not every checkbox click) so scroll position isn't disturbed
+  // for the common case of ticking a box that doesn't finish the map's part.
+  if (mapWidgetSelectedMap && mapWidgetSelectedMap !== 'Any Map'
+      && document.getElementById('map-quest-widget').classList.contains('vis')
+      && questDoneForMap(slug, mapWidgetSelectedMap)) {
+    renderMapQuestWidget();
+  }
 }
 
 // The same quest's objectives can be on screen in several places at once
