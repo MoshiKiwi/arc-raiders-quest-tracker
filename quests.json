@@ -755,7 +755,7 @@
       "Doctor's_Orders"
     ],
     "next": [
-      "A_Reveal_In_Ruins"
+      "A_Reveal_in_Ruins"
     ],
     "rewards": [
       {
@@ -872,8 +872,8 @@
     ],
     "grantedItems": []
   },
-  "A_Reveal_In_Ruins": {
-    "title": "A Reveal In Ruins",
+  "A_Reveal_in_Ruins": {
+    "title": "A Reveal in Ruins",
     "trader": "Lance",
     "location": [
       "Buried City"
@@ -1027,7 +1027,7 @@
     "inOneRound": true,
     "dialogue": "Those distant rumbles are getting less distant with each passing day. I have a lead on some LiDAR scanners that may help us monitor the tremors. You do want to keep a roof over your head, don't you?",
     "previous": [
-      "A_Reveal_In_Ruins"
+      "A_Reveal_in_Ruins"
     ],
     "next": [
       "Eyes_in_the_Sky"
@@ -4386,7 +4386,7 @@
       }
     ],
     "inOneRound": false,
-    "dialogue": "Kids around here have been kicking empty grenade casings around. It's only a matter of time before they're not so empty. So here's the plan: You help me with some prep work, and I'll set up an actual team for the young ones.",
+    "dialogue": "Kids around here have been kicking empty grenade casings around. It's only a matter of time before they're not so empty. So here's the plan: You help me with some prep work, and I'll set up an actual football team for the young ones.",
     "previous": [
       "Sparks_Fly"
     ],
