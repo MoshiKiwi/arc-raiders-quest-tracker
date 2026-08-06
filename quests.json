@@ -436,7 +436,7 @@
     ],
     "next": [
       "Dormant_Barons",
-      "Dust_On_The_Wires"
+      "Dust_on_the_Wires"
     ],
     "rewards": [
       {
@@ -2404,8 +2404,8 @@
       }
     ]
   },
-  "Dust_On_The_Wires": {
-    "title": "Dust On The Wires",
+  "Dust_on_the_Wires": {
+    "title": "Dust on the Wires",
     "trader": "Shani",
     "location": [
       "Spaceport"
@@ -2619,7 +2619,7 @@
     "dialogue": "Do you remember the information you dug up about Project Heartwood? I've been looking over it, and it all seems to lead back to Stella Montis. [ 1 ]",
     "previous": [
       "A_Dead_End",
-      "Dust_On_The_Wires"
+      "Dust_on_the_Wires"
     ],
     "next": [
       "Furtive_Meetings"
@@ -3498,7 +3498,7 @@
     "inOneRound": false,
     "dialogue": "There's a problem with our sensor coverage at the Spaceport. The security grid is old, so maybe it's just acting up. If you could get it running again, it'd save me a lot of sleepless nights.",
     "previous": [
-      "Dust_On_The_Wires"
+      "Dust_on_the_Wires"
     ],
     "next": [],
     "rewards": [
