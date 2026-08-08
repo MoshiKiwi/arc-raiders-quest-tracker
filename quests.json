@@ -974,7 +974,7 @@
       }
     ],
     "inOneRound": false,
-    "dialogue": "Look, I lost my cool a bit when I sent you after that trap. I don't usually lose my temper, but the First Wave... We went through a lot, back then. Lost a lot of people. It's still a bit of a raw wound for me, but I want you to understand.",
+    "dialogue": "Look [ 1 ] , I lost my cool a bit when I sent you after that trap. I don't usually lose my temper, but the First Wave... We went through a lot, back then. Lost a lot of people. It's still a bit of a raw wound for me, but I want you to understand.",
     "previous": [
       "Straight_Record"
     ],
@@ -1373,7 +1373,7 @@
       "A_Balanced_Harvest"
     ],
     "next": [
-      "The_Root_Of_The_Matter"
+      "The_Root_of_the_Matter"
     ],
     "rewards": [
       {
@@ -1492,8 +1492,8 @@
       }
     ]
   },
-  "The_Root_Of_The_Matter": {
-    "title": "The Root Of The Matter",
+  "The_Root_of_the_Matter": {
+    "title": "The Root of the Matter",
     "trader": "Celeste",
     "location": [
       "Buried City"
@@ -1638,7 +1638,7 @@
     "dialogue": "If you're here to complain about the water, join the club. I've been fielding complaints all day. Something is definitely up with it, and I need some help to sort it out.",
     "previous": [
       "After_Rain_Comes",
-      "The_Root_Of_The_Matter"
+      "The_Root_of_the_Matter"
     ],
     "next": [
       "Source_Of_The_Contamination",
