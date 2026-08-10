@@ -1415,7 +1415,7 @@
       }
     ],
     "inOneRound": true,
-    "dialogue": "Y'Know, back in the day we actually used to have a flag - well , a scrap of cloth more than anything. Still, seeing it meant you knew you had allies nearby, that you were on your own home turf. So, I was thinking...",
+    "dialogue": "Y'Know, back in the day we actually used to have a flag - well , a scrap of cloth more than anything. Still, you know [ 1 ] , seeing it meant you knew you had allies nearby, that you were on your own home turf. So, I was thinking...",
     "previous": [
       "Unexpected_Initiative"
     ],
