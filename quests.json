@@ -1923,7 +1923,7 @@
       "Switching_The_Supply"
     ],
     "next": [
-      "Prescriptions_Of_The_Past"
+      "Prescriptions_of_the_Past"
     ],
     "rewards": [
       {
@@ -2004,8 +2004,8 @@
     ],
     "grantedItems": []
   },
-  "Prescriptions_Of_The_Past": {
-    "title": "Prescriptions Of The Past",
+  "Prescriptions_of_the_Past": {
+    "title": "Prescriptions of the Past",
     "trader": "Lance",
     "location": [
       "Spaceport"
@@ -2128,7 +2128,7 @@
     "inOneRound": true,
     "dialogue": "This goes beyond bad luck. Something—or someone—has knocked out some of our electrical substations. The engineer I sent out to fix it hasn't returned, so I need all available Raiders to look into it. That includes you.",
     "previous": [
-      "Prescriptions_Of_The_Past"
+      "Prescriptions_of_the_Past"
     ],
     "next": [
       "Flickering_Threat"
