@@ -2235,7 +2235,7 @@
       }
     ],
     "inOneRound": false,
-    "dialogue": "My usual engineer is still healing from his wounds, and has been loopy for days. We can't afford to be at half-grid until he heals; I need someone to pick up his wrench in the mean time.",
+    "dialogue": "My usual engineer is still healing from his wounds, and has been loopy for days. We can't afford to be at half-grid until he heals; so [ 1 ] I need someone to pick up his wrench in the mean time.",
     "previous": [
       "Power_Out"
     ],
