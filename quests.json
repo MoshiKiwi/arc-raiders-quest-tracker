@@ -3865,7 +3865,7 @@
       "Cold_Storage"
     ],
     "next": [
-      "With_A_View",
+      "With_a_View",
       "On_Deaf_Ears"
     ],
     "rewards": [
@@ -4423,8 +4423,8 @@
       }
     ]
   },
-  "With_A_View": {
-    "title": "With A View",
+  "With_a_View": {
+    "title": "With a View",
     "trader": "Shani",
     "location": [
       "Stella Montis"
@@ -4692,7 +4692,7 @@
     "inOneRound": true,
     "dialogue": "Everyone's been on edge ever since rumors of that ARC signal spread. I was thinking a movie night would be a great distraction, but I'm missing some crucial supplies. [ 1 ] Help me out, yeah?",
     "previous": [
-      "With_A_View"
+      "With_a_View"
     ],
     "next": [],
     "rewards": [
@@ -4764,7 +4764,7 @@
     "inOneRound": true,
     "dialogue": "You like a certain amount of uncertainty, right? A client wants the contents of a locked safe in Stella Montis. It's intact, so whatever's inside has been there since before the Exodus. Interested?",
     "previous": [
-      "With_A_View"
+      "With_a_View"
     ],
     "next": [],
     "rewards": [
