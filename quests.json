@@ -229,7 +229,7 @@
       "A_Bad_Feeling"
     ],
     "next": [
-      "Down_To_Earth"
+      "Down_to_Earth"
     ],
     "rewards": [
       {
@@ -303,8 +303,8 @@
       }
     ]
   },
-  "Down_To_Earth": {
-    "title": "Down To Earth",
+  "Down_to_Earth": {
+    "title": "Down to Earth",
     "trader": "Shani",
     "location": [
       "Any"
@@ -432,7 +432,7 @@
     "inOneRound": false,
     "dialogue": "Intel's all well and good, but only gets us so far. If ARC's truly closing in, I need every Raider to prove they can handle their drones in a fight.",
     "previous": [
-      "Down_To_Earth"
+      "Down_to_Earth"
     ],
     "next": [
       "Dormant_Barons",
@@ -2876,7 +2876,7 @@
       }
     ],
     "inOneRound": false,
-    "dialogue": "We can't build ARC tech from scratch, but there's plenty I can tinker with [ 1 ] from the pieces you salvage. I'm currently trying to repurpose different ARC parts. Would you mind running an experiment for me?",
+    "dialogue": "We can't build ARC tech from scratch, but there's plenty I can tinker with [ 1 ] from the pieces you salvage. I'm currently trying to repurpose different ARC parts. Would you mind running some experiments for me?",
     "previous": [
       "Safe_Passage"
     ],
