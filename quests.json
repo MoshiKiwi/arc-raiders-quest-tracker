@@ -69,7 +69,12 @@
       "A_Bad_Feeling",
       "A_First_Foothold",
       "Battening_Down",
-      "Shoring_Up_Defenses"
+      "Shoring_Up_Defenses",
+      "Boarding_The_Frigate",
+      "Exploring_Pendola_Pass",
+      "Sizing_Things_Up",
+      "To_The_Skies",
+      "Clean_Hands"
     ],
     "rewards": [],
     "grantedItems": []
@@ -1246,7 +1251,9 @@
     "previous": [
       "Off_The_Radar"
     ],
-    "next": [],
+    "next": [
+      "Celeste's_Childhood_Drawings"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -1264,6 +1271,92 @@
     ],
     "next": [
       "With_A_Trace"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Boarding_The_Frigate": {
+    "title": "Boarding The Frigate",
+    "trader": "Celeste",
+    "location": [
+      "Frigate"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Off_The_Radar"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Exploring_Pendola_Pass": {
+    "title": "Exploring Pendola Pass",
+    "trader": "Celeste",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Off_The_Radar"
+    ],
+    "next": [
+      "Tracks_Of_The_Beast"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Sizing_Things_Up": {
+    "title": "Sizing Things Up",
+    "trader": "Celeste",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Off_The_Radar"
+    ],
+    "next": [
+      "Belly_Of_The_Beast"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "To_The_Skies": {
+    "title": "To The Skies",
+    "trader": "Apollo",
+    "location": [
+      "Any"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Off_The_Radar"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Clean_Hands": {
+    "title": "Clean Hands",
+    "trader": "Ermal",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Off_The_Radar"
+    ],
+    "next": [
+      "Taking_Stock"
     ],
     "rewards": [],
     "grantedItems": []
@@ -1551,6 +1644,75 @@
     "rewards": [],
     "grantedItems": []
   },
+  "Celeste's_Childhood_Drawings": {
+    "title": "Celeste's Childhood Drawings",
+    "trader": "Lance",
+    "location": [
+      "Riven Tides"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Shoring_Up_Defenses"
+    ],
+    "next": [
+      "Celeste's_Teenage_Rebellion"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Tracks_Of_The_Beast": {
+    "title": "Tracks Of The Beast",
+    "trader": "Shani",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Exploring_Pendola_Pass"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Belly_Of_The_Beast": {
+    "title": "Belly Of The Beast",
+    "trader": "Shani",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Sizing_Things_Up"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Taking_Stock": {
+    "title": "Taking Stock",
+    "trader": "Ermal",
+    "location": [
+      "Stella Montis",
+      "Spaceport",
+      "Dam Battlegrounds",
+      "Buried City"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Clean_Hands"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
   "Bombing_Run": {
     "title": "Bombing Run",
     "trader": "Shani",
@@ -1723,6 +1885,22 @@
     "next": [
       "A_Wrench_in_the_Works"
     ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Celeste's_Teenage_Rebellion": {
+    "title": "Celeste's Teenage Rebellion",
+    "trader": "Celeste",
+    "location": [
+      "Riven Tides"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Celeste's_Childhood_Drawings"
+    ],
+    "next": [],
     "rewards": [],
     "grantedItems": []
   },
