@@ -1304,6 +1304,7 @@
       "Off_The_Radar"
     ],
     "next": [
+      "Wires_Crossed",
       "Tracks_Of_The_Beast"
     ],
     "rewards": [],
@@ -1331,7 +1332,10 @@
     "title": "To The Skies",
     "trader": "Apollo",
     "location": [
-      "Any"
+      "Dam Battlegrounds",
+      "Blue Gate",
+      "Spaceport",
+      "Riven Tides"
     ],
     "objectives": [],
     "inOneRound": false,
@@ -1662,6 +1666,26 @@
     "rewards": [],
     "grantedItems": []
   },
+  "Wires_Crossed": {
+    "title": "Wires Crossed",
+    "trader": "Celeste",
+    "location": [
+      "Blue Gate",
+      "Spaceport",
+      "Buried City"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Exploring_Pendola_Pass"
+    ],
+    "next": [
+      "Ruins_And_Reverberations"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
   "Tracks_Of_The_Beast": {
     "title": "Tracks Of The Beast",
     "trader": "Shani",
@@ -1674,7 +1698,9 @@
     "previous": [
       "Exploring_Pendola_Pass"
     ],
-    "next": [],
+    "next": [
+      "Bait,_Fetch,_Blast"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -1709,7 +1735,9 @@
     "previous": [
       "Clean_Hands"
     ],
-    "next": [],
+    "next": [
+      "A_Path_Not_Yours"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -1899,6 +1927,54 @@
     "dialogue": "",
     "previous": [
       "Celeste's_Childhood_Drawings"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Ruins_And_Reverberations": {
+    "title": "Ruins And Reverberations",
+    "trader": "Celeste",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Wires_Crossed"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Bait,_Fetch,_Blast": {
+    "title": "Bait, Fetch, Blast",
+    "trader": "Apollo",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Tracks_Of_The_Beast"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "A_Path_Not_Yours": {
+    "title": "A Path Not Yours",
+    "trader": "Ermal",
+    "location": [
+      "The Blue Gate"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Taking_Stock"
     ],
     "next": [],
     "rewards": [],
