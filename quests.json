@@ -1699,7 +1699,8 @@
       "Exploring_Pendola_Pass"
     ],
     "next": [
-      "Bait,_Fetch,_Blast"
+      "Bait,_Fetch,_Blast",
+      "Belly_Of_The_Beast"
     ],
     "rewards": [],
     "grantedItems": []
@@ -1714,7 +1715,8 @@
     "inOneRound": false,
     "dialogue": "",
     "previous": [
-      "Sizing_Things_Up"
+      "Sizing_Things_Up",
+      "Tracks_Of_The_Beast"
     ],
     "next": [],
     "rewards": [],
@@ -1944,7 +1946,9 @@
     "previous": [
       "Wires_Crossed"
     ],
-    "next": [],
+    "next": [
+      "Divided"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -2071,6 +2075,22 @@
     "dialogue": "",
     "previous": [
       "Safe_Harbor"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Divided": {
+    "title": "Divided",
+    "trader": "Ermal",
+    "location": [
+      "Pendola Pass"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Ruins_And_Reverberations"
     ],
     "next": [],
     "rewards": [],
