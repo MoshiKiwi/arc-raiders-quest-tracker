@@ -2076,7 +2076,9 @@
     "previous": [
       "Safe_Harbor"
     ],
-    "next": [],
+    "next": [
+      "Home_To_Roost"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -2091,6 +2093,76 @@
     "dialogue": "",
     "previous": [
       "Ruins_And_Reverberations"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Home_To_Roost": {
+    "title": "Home To Roost",
+    "trader": "Shani",
+    "location": [
+      "The Blue Gate"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "A_Wrench_in_the_Works"
+    ],
+    "next": [
+      "Someone_Else's_Shoes"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Someone_Else's_Shoes": {
+    "title": "Someone Else's Shoes",
+    "trader": "Celeste",
+    "location": [
+      "Stella Montis"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Home_To_Roost"
+    ],
+    "next": [
+      "Empathetic_Prototypes"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Empathetic_Prototypes": {
+    "title": "Empathetic Prototypes",
+    "trader": "Lance",
+    "location": [
+      "Spaceport"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Someone_Else's_Shoes"
+    ],
+    "next": [
+      "Where_Everything_Falls"
+    ],
+    "rewards": [],
+    "grantedItems": []
+  },
+  "Where_Everything_Falls": {
+    "title": "Where Everything Falls",
+    "trader": "Shani",
+    "location": [
+      "Spaceport"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Empathetic_Prototypes"
     ],
     "next": [],
     "rewards": [],
