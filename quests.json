@@ -1287,7 +1287,9 @@
     "previous": [
       "Off_The_Radar"
     ],
-    "next": [],
+    "next": [
+      "Disrupting_The_Frigate"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -1666,6 +1668,22 @@
     "rewards": [],
     "grantedItems": []
   },
+  "Disrupting_The_Frigate": {
+    "title": "Disrupting The Frigate",
+    "trader": "Celeste",
+    "location": [
+      "Frigate"
+    ],
+    "objectives": [],
+    "inOneRound": false,
+    "dialogue": "",
+    "previous": [
+      "Boarding_The_Frigate"
+    ],
+    "next": [],
+    "rewards": [],
+    "grantedItems": []
+  },
   "Wires_Crossed": {
     "title": "Wires Crossed",
     "trader": "Celeste",
@@ -1980,7 +1998,9 @@
     "previous": [
       "Taking_Stock"
     ],
-    "next": [],
+    "next": [
+      "Divided"
+    ],
     "rewards": [],
     "grantedItems": []
   },
@@ -2092,6 +2112,7 @@
     "inOneRound": false,
     "dialogue": "",
     "previous": [
+      "A_Path_Not_Yours",
       "Ruins_And_Reverberations"
     ],
     "next": [],
