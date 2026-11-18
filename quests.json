@@ -2168,13 +2168,13 @@
       "Someone_Else's_Shoes"
     ],
     "next": [
-      "Where_Everything_Falls"
+      "When_Everything_Falls"
     ],
     "rewards": [],
     "grantedItems": []
   },
-  "Where_Everything_Falls": {
-    "title": "Where Everything Falls",
+  "When_Everything_Falls": {
+    "title": "When Everything Falls",
     "trader": "Shani",
     "location": [
       "Spaceport"
@@ -2182,9 +2182,7 @@
     "objectives": [],
     "inOneRound": false,
     "dialogue": "",
-    "previous": [
-      "Empathetic_Prototypes"
-    ],
+    "previous": [],
     "next": [],
     "rewards": [],
     "grantedItems": []
