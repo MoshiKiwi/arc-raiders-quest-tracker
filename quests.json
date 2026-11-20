@@ -2182,7 +2182,9 @@
     "objectives": [],
     "inOneRound": false,
     "dialogue": "",
-    "previous": [],
+    "previous": [
+      "Empathetic_Prototypes"
+    ],
     "next": [],
     "rewards": [],
     "grantedItems": []
